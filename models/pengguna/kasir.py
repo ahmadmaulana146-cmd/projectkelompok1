@@ -10,16 +10,14 @@ if TYPE_CHECKING:
 
 
 class Kasir(User):
-    """Subclass User yang merepresentasikan Kasir pelayanan transaksi."""
-
     def __init__(
         self,
-        id_user: str,
-        username: str,
-        password_hash: str,
-        nama_lengkap: str,
-        shift_kerja: str,
-        status_aktif: bool = True,
+        id_user,
+        username,
+        password_hash,
+        nama_lengkap,
+        shift_kerja,
+        status_aktif = True,
     ) -> None:
         super().__init__(
             id_user=id_user,
@@ -29,15 +27,15 @@ class Kasir(User):
             peran="Kasir",
             status_aktif=status_aktif,
         )
-        self.__shift_kerja: str = ""
+        self.__shift_kerja = ""
         self.shift_kerja = shift_kerja
 
     @property
-    def shift_kerja(self) -> str:
+    def shift_kerja(self):
         return self.__shift_kerja
 
     @shift_kerja.setter
-    def shift_kerja(self, value: str) -> None:
+    def shift_kerja(self, value) -> None:
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Shift kerja harus berupa string non-kosong.")
         self.__shift_kerja = value.strip()
@@ -59,7 +57,7 @@ class Kasir(User):
         return TransaksiPenjualan(nomor_transaksi=nomor_tx, kasir=self, pembeli=pembeli)
 
     def catat_data_pembeli(
-        self, nama: str, nik: Optional[str], alamat: str
+        self, nama, nik: Optional[str], alamat
     ) -> Pembeli:
         from models.pembeli.pembeli import Pembeli
         id_cust = f"CUST-{uuid.uuid4().hex[:6].upper()}"
