@@ -1,12 +1,4 @@
-"""Main demonstration script for SIMIP (Sistem Kasir dan Inventaris Koperasi Desa Merah Putih).
 
-Demonstrates:
-1. Strict encapsulation and ironclad setters with try-except ValueError validation tests.
-2. Inheritance and polymorphism (User hierarchy & AktivitasPersediaan hierarchy).
-3. End-to-end cooperative operations (Admin, Petugas Gudang, Kasir).
-4. Subsidized & regulated commodity compliance (SPHP Rice, LPG 3kg, Minyakita).
-5. LayananLaporan reporting and audit logging.
-"""
 
 from __future__ import annotations
 from datetime import date
