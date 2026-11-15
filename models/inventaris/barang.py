@@ -9,27 +9,26 @@ if TYPE_CHECKING:
 
 
 class Barang:
-    """Kelas domain yang merepresentasikan komoditas atau barang inventaris koperasi."""
 
     def __init__(
         self,
-        kode_barang: str,
-        nama_barang: str,
-        satuan: str,
-        harga_dasar: Decimal,
-        stok_tersedia: int = 0,
-        stok_minimum: int = 5,
-        status_aktif: bool = True,
+        kode_barang,
+        nama_barang,
+        satuan,
+        harga_dasar,
+        stok_tersedia = 0,
+        stok_minimum = 5,
+        status_aktif  = True,
         kategori: Optional[Kategori] = None,
         aturan_penjualan: Optional[AturanPenjualan] = None,
-    ) -> None:
-        self.__kode_barang: str = ""
-        self.__nama_barang: str = ""
-        self.__satuan: str = ""
-        self.__harga_dasar: Decimal = Decimal("0")
-        self.__stok_tersedia: int = 0
-        self.__stok_minimum: int = 0
-        self.__status_aktif: bool = False
+    ):
+        self.__kode_barang = ""
+        self.__nama_barang = ""
+        self.__satuan = ""
+        self.__harga_dasar = Decimal("0")
+        self.__stok_tersedia = 0
+        self.__stok_minimum = 0
+        self.__status_aktif = False
         self.__kategori: Optional[Kategori] = None
         self.__aturan_penjualan: Optional[AturanPenjualan] = None
 
@@ -45,41 +44,41 @@ class Barang:
         self.aturan_penjualan = aturan_penjualan
 
     @property
-    def kode_barang(self) -> str:
+    def kode_barang(self):
         return self.__kode_barang
 
     @kode_barang.setter
-    def kode_barang(self, value: str) -> None:
+    def kode_barang(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Kode barang harus berupa string non-kosong.")
         self.__kode_barang = value.strip()
 
     @property
-    def nama_barang(self) -> str:
+    def nama_barang(self):
         return self.__nama_barang
 
     @nama_barang.setter
-    def nama_barang(self, value: str) -> None:
+    def nama_barang(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Nama barang harus berupa string non-kosong.")
         self.__nama_barang = value.strip()
 
     @property
-    def satuan(self) -> str:
+    def satuan(self):
         return self.__satuan
 
     @satuan.setter
-    def satuan(self, value: str) -> None:
+    def satuan(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Satuan harus berupa string non-kosong.")
         self.__satuan = value.strip()
 
     @property
-    def harga_dasar(self) -> Decimal:
+    def harga_dasar(self):
         return self.__harga_dasar
 
     @harga_dasar.setter
-    def harga_dasar(self, value: Decimal) -> None:
+    def harga_dasar(self, value):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -90,11 +89,11 @@ class Barang:
         self.__harga_dasar = value
 
     @property
-    def stok_tersedia(self) -> int:
+    def stok_tersedia(self):
         return self.__stok_tersedia
 
     @stok_tersedia.setter
-    def stok_tersedia(self, value: int) -> None:
+    def stok_tersedia(self, value):
         if not isinstance(value, int):
             raise ValueError("Stok tersedia harus berupa bilangan bulat (int).")
         if value < 0:
@@ -102,11 +101,11 @@ class Barang:
         self.__stok_tersedia = value
 
     @property
-    def stok_minimum(self) -> int:
+    def stok_minimum(self):
         return self.__stok_minimum
 
     @stok_minimum.setter
-    def stok_minimum(self, value: int) -> None:
+    def stok_minimum(self, value):
         if not isinstance(value, int):
             raise ValueError("Stok minimum harus berupa bilangan bulat (int).")
         if value < 0:
@@ -114,11 +113,11 @@ class Barang:
         self.__stok_minimum = value
 
     @property
-    def status_aktif(self) -> bool:
+    def status_aktif(self):
         return self.__status_aktif
 
     @status_aktif.setter
-    def status_aktif(self, value: bool) -> None:
+    def status_aktif(self, value):
         if not isinstance(value, bool):
             raise ValueError("Status aktif harus berupa boolean.")
         self.__status_aktif = value
@@ -128,7 +127,7 @@ class Barang:
         return self.__kategori
 
     @kategori.setter
-    def kategori(self, value: Optional[Kategori]) -> None:
+    def kategori(self, value: Optional[Kategori]):
         if value is not None and not isinstance(value, Kategori):
             raise ValueError("Kategori harus merupakan instance dari kelas Kategori.")
         self.__kategori = value
@@ -138,20 +137,18 @@ class Barang:
         return self.__aturan_penjualan
 
     @aturan_penjualan.setter
-    def aturan_penjualan(self, value: Optional[AturanPenjualan]) -> None:
+    def aturan_penjualan(self, value: Optional[AturanPenjualan]):
         from models.pembeli.aturan_penjualan import AturanPenjualan
         if value is not None and not isinstance(value, AturanPenjualan):
             raise ValueError("Aturan penjualan harus merupakan instance dari AturanPenjualan.")
         self.__aturan_penjualan = value
 
-    def tambah_stok(self, jumlah: int, sumber: str = "") -> None:
-        """Menambahkan kuantitas stok barang yang tersedia."""
+    def tambah_stok(self, jumlah, sumber = ""):
         if not isinstance(jumlah, int) or jumlah <= 0:
             raise ValueError("Jumlah stok yang ditambahkan harus berupa bilangan bulat positif.")
         self.stok_tersedia = self.__stok_tersedia + jumlah
 
-    def kurangi_stok(self, jumlah: int, sumber: str = "") -> None:
-        """Mengurangi kuantitas stok barang yang tersedia."""
+    def kurangi_stok(self, jumlah, sumber = ""):
         if not isinstance(jumlah, int) or jumlah <= 0:
             raise ValueError("Jumlah stok yang dikurangkan harus berupa bilangan bulat positif.")
         if self.__stok_tersedia < jumlah:
@@ -161,26 +158,22 @@ class Barang:
             )
         self.stok_tersedia = self.__stok_tersedia - jumlah
 
-    def sesuaikan_stok_aktual(self, stok_fisik_baru: int, alasan: str) -> None:
-        """Menyesuaikan stok sistem dengan hasil pemeriksaan fisik (stock opname)."""
+    def sesuaikan_stok_aktual(self, stok_fisik_baru, alasan):
         if not isinstance(stok_fisik_baru, int) or stok_fisik_baru < 0:
             raise ValueError("Stok fisik hasil opname harus berupa bilangan bulat non-negatif.")
         if not isinstance(alasan, str) or not alasan.strip():
             raise ValueError("Alasan penyesuaian stok wajib diisi (BR-10).")
         self.stok_tersedia = stok_fisik_baru
 
-    def apakah_stok_mencukupi(self, jumlah_diminta: int) -> bool:
-        """Memeriksa apakah stok saat ini mencukupi kuantitas yang diminta."""
+    def apakah_stok_mencukupi(self, jumlah_diminta):
         if not isinstance(jumlah_diminta, int) or jumlah_diminta <= 0:
             return False
         return self.__stok_tersedia >= jumlah_diminta
 
-    def apakah_mencapai_batas_minimum(self) -> bool:
-        """Memeriksa apakah stok barang berada pada atau di bawah batas minimum."""
+    def apakah_mencapai_batas_minimum(self):
         return self.__stok_tersedia <= self.__stok_minimum
 
-    def dapatkan_harga_berlaku(self) -> Decimal:
-        """Mendapatkan harga jual satuan yang berlaku (mempertimbangkan HET jika ada aturan aktif)."""
+    def dapatkan_harga_berlaku(self):
         if self.__aturan_penjualan is not None and self.__aturan_penjualan.status_aktif:
             return self.__aturan_penjualan.hitung_harga_jual_komoditas(self.__harga_dasar)
         return self.__harga_dasar

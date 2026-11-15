@@ -14,15 +14,13 @@ if TYPE_CHECKING:
 
 
 class PetugasGudang(User):
-    """Subclass User yang merepresentasikan Petugas Pengelolaan Gudang dan Persediaan."""
-
     def __init__(
         self,
-        id_user: str,
-        username: str,
-        password_hash: str,
-        nama_lengkap: str,
-        status_aktif: bool = True,
+        id_user,
+        username,
+        password_hash,
+        nama_lengkap,
+        status_aktif = True,
     ) -> None:
         super().__init__(
             id_user=id_user,
@@ -47,9 +45,9 @@ class PetugasGudang(User):
         barang: Barang,
         supplier: Supplier,
         jumlah: int,
-        no_ref: str,
+        no_ref,
         harga_beli: Decimal,
-        ket: str,
+        ket,
     ) -> BarangMasuk:
         from models.persediaan.barang_masuk import BarangMasuk
         id_akt = f"IN-{uuid.uuid4().hex[:8].upper()}"
@@ -72,9 +70,9 @@ class PetugasGudang(User):
         self,
         barang: Barang,
         jumlah: int,
-        tujuan: str,
-        penerima: str,
-        ket: str,
+        tujuan,
+        penerima,
+        ket,
     ) -> BarangKeluar:
         from models.persediaan.barang_keluar import BarangKeluar
         id_akt = f"OUT-{uuid.uuid4().hex[:8].upper()}"
@@ -96,7 +94,7 @@ class PetugasGudang(User):
         self,
         barang: Barang,
         stok_fisik: int,
-        alasan: str,
+        alasan,
     ) -> PenyesuaianStok:
         from models.persediaan.penyesuaian_stok import PenyesuaianStok
         id_akt = f"ADJ-{uuid.uuid4().hex[:8].upper()}"

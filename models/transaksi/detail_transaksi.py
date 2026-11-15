@@ -9,22 +9,20 @@ if TYPE_CHECKING:
 
 
 class DetailTransaksi:
-    """Menyimpan kuantitas pembelian dan mengunci snapshot harga satuan saat transaksi berlangsung (BR-16)."""
-
     def __init__(
         self,
-        id_detail: str,
-        barang: Barang,
-        jumlah_beli: int,
-        harga_satuan_saat_transaksi: Decimal,
-        kode_aturan_diterapkan: Optional[str] = None,
-    ) -> None:
-        self.__id_detail: str = ""
-        self.__barang: Optional[Barang] = None
-        self.__jumlah_beli: int = 0
-        self.__harga_satuan_saat_transaksi: Decimal = Decimal("0")
-        self.__subtotal: Decimal = Decimal("0")
-        self.__kode_aturan_diterapkan: Optional[str] = None
+        id_detail,
+        barang,
+        jumlah_beli,
+        harga_satuan_saat_transaksi,
+        kode_aturan_diterapkan = None,
+    ):
+        self.__id_detail = ""
+        self.__barang = None
+        self.__jumlah_beli = 0
+        self.__harga_satuan_saat_transaksi = Decimal("0")
+        self.__subtotal = Decimal("0")
+        self.__kode_aturan_diterapkan = None
 
         self.id_detail = id_detail
         self.barang = barang
@@ -34,43 +32,43 @@ class DetailTransaksi:
         self.hitung_subtotal()
 
     @property
-    def id_detail(self) -> str:
+    def id_detail(self):
         return self.__id_detail
 
     @id_detail.setter
-    def id_detail(self, value: str) -> None:
+    def id_detail(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Detail harus berupa string non-kosong.")
         self.__id_detail = value.strip()
 
     @property
-    def barang(self) -> Barang:
+    def barang(self):
         if self.__barang is None:
             raise ValueError("Barang belum diinisialisasi.")
         return self.__barang
 
     @barang.setter
-    def barang(self, value: Barang) -> None:
+    def barang(self, value):
         if not isinstance(value, Barang):
             raise ValueError("barang harus merupakan instance dari kelas Barang.")
         self.__barang = value
 
     @property
-    def jumlah_beli(self) -> int:
+    def jumlah_beli(self):
         return self.__jumlah_beli
 
     @jumlah_beli.setter
-    def jumlah_beli(self, value: int) -> None:
+    def jumlah_beli(self, value):
         if not isinstance(value, int) or value <= 0:
             raise ValueError("Jumlah beli harus berupa bilangan bulat positif.")
         self.__jumlah_beli = value
 
     @property
-    def harga_satuan_saat_transaksi(self) -> Decimal:
+    def harga_satuan_saat_transaksi(self):
         return self.__harga_satuan_saat_transaksi
 
     @harga_satuan_saat_transaksi.setter
-    def harga_satuan_saat_transaksi(self, value: Decimal) -> None:
+    def harga_satuan_saat_transaksi(self, value: Decimal):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -81,11 +79,11 @@ class DetailTransaksi:
         self.__harga_satuan_saat_transaksi = value
 
     @property
-    def subtotal(self) -> Decimal:
+    def subtotal(self):
         return self.__subtotal
 
     @subtotal.setter
-    def subtotal(self, value: Decimal) -> None:
+    def subtotal(self, value: Decimal):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -96,21 +94,21 @@ class DetailTransaksi:
         self.__subtotal = value
 
     @property
-    def kode_aturan_diterapkan(self) -> Optional[str]:
+    def kode_aturan_diterapkan(self):
         return self.__kode_aturan_diterapkan
 
     @kode_aturan_diterapkan.setter
-    def kode_aturan_diterapkan(self, value: Optional[str]) -> None:
+    def kode_aturan_diterapkan(self, value: Optional[str]):
         if value is not None and not isinstance(value, str):
             raise ValueError("Kode aturan diterapkan harus bertipe string atau None.")
         self.__kode_aturan_diterapkan = value.strip() if value else None
 
-    def hitung_subtotal(self) -> Decimal:
+    def hitung_subtotal(self):
         """Menghitung subtotal = jumlah_beli * harga_satuan_saat_transaksi."""
         self.subtotal = Decimal(self.jumlah_beli) * self.harga_satuan_saat_transaksi
         return self.subtotal
 
-    def perbarui_jumlah(self, jumlah_baru: int) -> None:
+    def perbarui_jumlah(self, jumlah_baru):
         """Memperbarui kuantitas pembelian dan mengkalkulasi ulang subtotal."""
         self.jumlah_beli = jumlah_baru
         self.hitung_subtotal()

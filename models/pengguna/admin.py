@@ -11,15 +11,13 @@ if TYPE_CHECKING:
 
 
 class Admin(User):
-    """Subclass User yang merepresentasikan Administrator Koperasi."""
-
     def __init__(
         self,
-        id_user: str,
-        username: str,
-        password_hash: str,
-        nama_lengkap: str,
-        status_aktif: bool = True,
+        id_user,
+        username,
+        password_hash,
+        nama_lengkap,
+        status_aktif = True,
     ) -> None:
         super().__init__(
             id_user=id_user,
@@ -41,7 +39,7 @@ class Admin(User):
             "lihat_laporan_persediaan",
         ]
 
-    def kelola_pengguna(self, data_user: User, aksi: str) -> bool:
+    def kelola_pengguna(self, data_user: User, aksi):
         if not isinstance(data_user, User):
             raise ValueError("data_user harus merupakan turunan dari kelas User.")
         if not isinstance(aksi, str) or not aksi.strip():
@@ -56,7 +54,7 @@ class Admin(User):
             data_user.status_aktif = False
         return True
 
-    def kelola_barang(self, barang: Barang, aksi: str) -> bool:
+    def kelola_barang(self, barang: Barang, aksi):
         from models.inventaris.barang import Barang
         if not isinstance(barang, Barang):
             raise ValueError("barang harus merupakan instance dari kelas Barang.")
@@ -72,7 +70,7 @@ class Admin(User):
             barang.status_aktif = False
         return True
 
-    def kelola_kategori(self, kategori: Kategori, aksi: str) -> bool:
+    def kelola_kategori(self, kategori: Kategori, aksi):
         from models.inventaris.kategori import Kategori
         if not isinstance(kategori, Kategori):
             raise ValueError("kategori harus merupakan instance dari kelas Kategori.")
@@ -84,7 +82,7 @@ class Admin(User):
             raise ValueError(f"Aksi '{aksi}' tidak valid. Pilihan aksi: {sorted(aksi_valid)}")
         return True
 
-    def kelola_supplier(self, supplier: Supplier, aksi: str) -> bool:
+    def kelola_supplier(self, supplier: Supplier, aksi):
         from models.inventaris.supplier import Supplier
         if not isinstance(supplier, Supplier):
             raise ValueError("supplier harus merupakan instance dari kelas Supplier.")
@@ -98,7 +96,7 @@ class Admin(User):
 
     def tetapkan_aturan_penjualan(
         self, barang: Barang, aturan: AturanPenjualan
-    ) -> bool:
+    ):
         from models.inventaris.barang import Barang
         from models.pembeli.aturan_penjualan import AturanPenjualan
         if not isinstance(barang, Barang):
