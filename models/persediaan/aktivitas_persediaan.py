@@ -142,7 +142,7 @@ class AktivitasPersediaan(ABC):
             "id_petugas": self.petugas.id_user,
             "nama_petugas": self.petugas.nama_lengkap,
             "id_aktivitas": self.id_aktivitas,
-            "waktu_aktivitas": self.waktu_aktivitas.isoformat(),
+            "waktu_aktivitas": self.waktu_aktivitas,
             "kode_barang": self.barang.kode_barang,
             "nama_barang": self.barang.nama_barang,
             "jumlah_perubahan": self.jumlah_perubahan,

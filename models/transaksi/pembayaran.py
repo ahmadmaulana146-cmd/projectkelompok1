@@ -5,24 +5,23 @@ from typing import Optional
 
 
 class Pembayaran:
-    """Kelas domain untuk mencatat dan memproses transaksi pelunasan pembayaran serta kembalian (FR-12)."""
 
     def __init__(
         self,
-        id_pembayaran: str,
-        nominal_tagihan: Decimal,
-        nominal_dibayar: Decimal,
-        metode_pembayaran: str = "TUNAI",
+        id_pembayaran,
+        nominal_tagihan,
+        nominal_dibayar,
+        metode_pembayaran = "TUNAI",
         waktu_pembayaran: Optional[datetime] = None,
-        nominal_kembalian: Decimal = Decimal("0"),
+        nominal_kembalian = Decimal("0"),
         status_lunas: bool = False,
-    ) -> None:
-        self.__id_pembayaran: str = ""
+    ):
+        self.__id_pembayaran = ""
         self.__waktu_pembayaran: datetime = datetime.now()
-        self.__metode_pembayaran: str = ""
-        self.__nominal_tagihan: Decimal = Decimal("0")
-        self.__nominal_dibayar: Decimal = Decimal("0")
-        self.__nominal_kembalian: Decimal = Decimal("0")
+        self.__metode_pembayaran = ""
+        self.__nominal_tagihan = Decimal("0")
+        self.__nominal_dibayar = Decimal("0")
+        self.__nominal_kembalian = Decimal("0")
         self.__status_lunas: bool = False
 
         self.id_pembayaran = id_pembayaran
@@ -36,41 +35,41 @@ class Pembayaran:
         self.status_lunas = status_lunas
 
     @property
-    def id_pembayaran(self) -> str:
+    def id_pembayaran(self):
         return self.__id_pembayaran
 
     @id_pembayaran.setter
-    def id_pembayaran(self, value: str) -> None:
+    def id_pembayaran(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Pembayaran harus berupa string non-kosong.")
         self.__id_pembayaran = value.strip()
 
     @property
-    def waktu_pembayaran(self) -> datetime:
+    def waktu_pembayaran(self):
         return self.__waktu_pembayaran
 
     @waktu_pembayaran.setter
-    def waktu_pembayaran(self, value: datetime) -> None:
+    def waktu_pembayaran(self, value: datetime):
         if not isinstance(value, datetime):
             raise ValueError("Waktu pembayaran harus bertipe datetime.")
         self.__waktu_pembayaran = value
 
     @property
-    def metode_pembayaran(self) -> str:
+    def metode_pembayaran(self):
         return self.__metode_pembayaran
 
     @metode_pembayaran.setter
-    def metode_pembayaran(self, value: str) -> None:
+    def metode_pembayaran(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Metode pembayaran harus berupa string non-kosong.")
         self.__metode_pembayaran = value.strip().upper()
 
     @property
-    def nominal_tagihan(self) -> Decimal:
+    def nominal_tagihan(self):
         return self.__nominal_tagihan
 
     @nominal_tagihan.setter
-    def nominal_tagihan(self, value: Decimal) -> None:
+    def nominal_tagihan(self, value):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -81,11 +80,11 @@ class Pembayaran:
         self.__nominal_tagihan = value
 
     @property
-    def nominal_dibayar(self) -> Decimal:
+    def nominal_dibayar(self):
         return self.__nominal_dibayar
 
     @nominal_dibayar.setter
-    def nominal_dibayar(self, value: Decimal) -> None:
+    def nominal_dibayar(self, value):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -96,11 +95,11 @@ class Pembayaran:
         self.__nominal_dibayar = value
 
     @property
-    def nominal_kembalian(self) -> Decimal:
+    def nominal_kembalian(self):
         return self.__nominal_kembalian
 
     @nominal_kembalian.setter
-    def nominal_kembalian(self, value: Decimal) -> None:
+    def nominal_kembalian(self, value):
         if not isinstance(value, Decimal):
             try:
                 value = Decimal(str(value))
@@ -115,17 +114,15 @@ class Pembayaran:
         return self.__status_lunas
 
     @status_lunas.setter
-    def status_lunas(self, value: bool) -> None:
+    def status_lunas(self, value: bool):
         if not isinstance(value, bool):
             raise ValueError("status_lunas harus bertipe boolean.")
         self.__status_lunas = value
 
     def validasi_kecukupan_dana(self) -> bool:
-        """Memeriksa apakah uang yang dibayarkan mencukupi nominal total tagihan."""
         return self.nominal_dibayar >= self.nominal_tagihan
 
-    def hitung_kembalian(self) -> Decimal:
-        """Menghitung uang kembalian dan menandai pembayaran sebagai lunas."""
+    def hitung_kembalian(self):
         if not self.validasi_kecukupan_dana():
             raise ValueError(
                 f"Nominal pembayaran (Rp {self.nominal_dibayar}) kurang dari total tagihan "

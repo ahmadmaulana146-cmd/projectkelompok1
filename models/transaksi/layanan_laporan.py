@@ -9,8 +9,6 @@ from models.transaksi.transaksi_penjualan import TransaksiPenjualan
 
 
 class LayananLaporan:
-    """Menyediakan fasilitas pelaporan penjualan, evaluasi posisi stok inventaris, dan pencarian jejak audit."""
-
     def __init__(
         self,
         daftar_transaksi: Optional[List[TransaksiPenjualan]] = None,
@@ -71,19 +69,16 @@ class LayananLaporan:
         self.__daftar_aktivitas = list(value)
 
     def tambah_transaksi(self, transaksi: TransaksiPenjualan) -> None:
-        """Mendaftarkan transaksi ke koleksi laporan."""
         if not isinstance(transaksi, TransaksiPenjualan):
             raise ValueError("transaksi harus berupa objek TransaksiPenjualan.")
         self.__daftar_transaksi.append(transaksi)
 
     def tambah_barang(self, barang: Barang) -> None:
-        """Mendaftarkan barang ke koleksi inventaris."""
         if not isinstance(barang, Barang):
             raise ValueError("barang harus berupa objek Barang.")
         self.__daftar_barang.append(barang)
 
     def tambah_aktivitas(self, aktivitas: AktivitasPersediaan) -> None:
-        """Mendaftarkan aktivitas persediaan ke koleksi jejak audit."""
         if not isinstance(aktivitas, AktivitasPersediaan):
             raise ValueError("aktivitas harus berupa objek AktivitasPersediaan.")
         self.__daftar_aktivitas.append(aktivitas)
@@ -91,7 +86,6 @@ class LayananLaporan:
     def hasilkan_laporan_penjualan(
         self, periode_awal: date, periode_akhir: date
     ) -> Dict[str, Any]:
-        """Menghasilkan rekapitulasi penjualan yang selesai pada rentang tanggal tertentu (FR-14)."""
         if not isinstance(periode_awal, date) or not isinstance(periode_akhir, date):
             raise ValueError("Periode awal dan akhir harus berupa objek date.")
         if periode_awal > periode_akhir:
