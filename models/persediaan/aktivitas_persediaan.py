@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 
 
 class AktivitasPersediaan(ABC):
-    """Abstract Base Class untuk seluruh aktivitas perubahan stok inventaris gudang (Template Method)."""
-
+ 
     def __init__(
         self,
         id_aktivitas: str,
@@ -23,18 +22,10 @@ class AktivitasPersediaan(ABC):
         waktu_aktivitas: Optional[datetime] = None,
         stok_sebelum: int = 0,
         stok_sesudah: int = 0,
-    ) -> None:
-        self._id_aktivitas: str = ""
-        self._waktu_aktivitas: datetime = datetime.now()
-        self._barang: Optional[Barang] = None
-        self._petugas: Optional[PetugasGudang] = None
-        self._jumlah_perubahan: int = 0
-        self._stok_sebelum: int = 0
-        self._stok_sesudah: int = 0
-        self._catatan: str = ""
+    ) :
 
         self.id_aktivitas = id_aktivitas
-        self.waktu_aktivitas = waktu_aktivitas if waktu_aktivitas is not None else datetime.now()
+        self.waktu_aktivitas = datetime.now()
         self.barang = barang
         self.petugas = petugas
         self.jumlah_perubahan = jumlah_perubahan
