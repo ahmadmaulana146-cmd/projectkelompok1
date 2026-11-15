@@ -13,17 +13,14 @@ if TYPE_CHECKING:
 class BarangKeluar(AktivitasPersediaan):
     """Subclass AktivitasPersediaan untuk pencatatan pengeluaran barang nonpenjualan (rusak, kedaluwarsa, internal)."""
 
-    def __init__(
-        self,
-        id_aktivitas: str,
-        barang: Barang,
+    def __init__(self, id_aktivitas: str, barang: Barang,
         petugas: PetugasGudang,
         jumlah_perubahan: int,
         catatan: str,
         jenis_keperluan_keluar: str,
         penerima_internal: str,
         waktu_aktivitas: Optional[datetime] = None,
-    ) -> None:
+    ) :
         super().__init__(
             id_aktivitas=id_aktivitas,
             barang=barang,

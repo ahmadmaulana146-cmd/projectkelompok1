@@ -11,19 +11,17 @@ if TYPE_CHECKING:
 
 
 class PenyesuaianStok(AktivitasPersediaan):
-    """Subclass AktivitasPersediaan untuk sinkronisasi stok hasil pemeriksaan fisik (stock opname)."""
-
-    def __init__(
-        self,
-        id_aktivitas: str,
-        barang: Barang,
-        petugas: PetugasGudang,
-        stok_fisik_hasil_opname: int,
-        alasan_penyesuaian: str,
-        catatan: str = "",
-        waktu_aktivitas: Optional[datetime] = None,
-    ) -> None:
+    def __init__(self, 
+                id_aktivitas: str, 
+                barang: Barang, 
+                petugas: PetugasGudang,
+                stok_fisik_hasil_opname: int,
+                alasan_penyesuaian: str,catatan: str = "",
+                waktu_aktivitas: Optional[datetime] = None,
+                ) :
+        
         selisih_awal = stok_fisik_hasil_opname - barang.stok_tersedia
+        
         super().__init__(
             id_aktivitas=id_aktivitas,
             barang=barang,
@@ -41,7 +39,7 @@ class PenyesuaianStok(AktivitasPersediaan):
         self.hitung_selisih()
 
     @property
-    def stok_fisik_hasil_opname(self) -> int:
+    def stok_fisik_hasil_opname(self) :
         return self.__stok_fisik_hasil_opname
 
     @stok_fisik_hasil_opname.setter
@@ -51,27 +49,26 @@ class PenyesuaianStok(AktivitasPersediaan):
         self.__stok_fisik_hasil_opname = value
 
     @property
-    def selisih_stok(self) -> int:
+    def selisih_stok(self) :
         return self.__selisih_stok
 
     @selisih_stok.setter
-    def selisih_stok(self, value: int) -> None:
+    def selisih_stok(self, value: int) :
         if not isinstance(value, int):
             raise ValueError("Selisih stok harus berupa integer.")
         self.__selisih_stok = value
 
     @property
-    def alasan_penyesuaian(self) -> str:
+    def alasan_penyesuaian(self) :
         return self.__alasan_penyesuaian
 
     @alasan_penyesuaian.setter
-    def alasan_penyesuaian(self, value: str) -> None:
+    def alasan_penyesuaian(self, value: str) :
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Alasan penyesuaian stok wajib diisi (BR-10).")
         self.__alasan_penyesuaian = value.strip()
 
-    def hitung_selisih(self) -> int:
-        """Menghitung selisih antara stok fisik hasil opname dengan stok tercatat pada sistem."""
+    def hitung_selisih(self) :
         self.selisih_stok = self.stok_fisik_hasil_opname - self._barang.stok_tersedia
         self.jumlah_perubahan = self.selisih_stok
         return self.selisih_stok
@@ -103,8 +100,7 @@ class PenyesuaianStok(AktivitasPersediaan):
             pesan_validasi=f"Penyesuaian stok valid dengan selisih {self.__selisih_stok}.",
         )
 
-    def terapkan_perubahan_stok(self) -> None:
-        """Menerapkan penyesuaian stok aktual pada objek Barang (FR-08, BR-10)."""
+    def terapkan_perubahan_stok(self) :
         self._barang.sesuaikan_stok_aktual(
             stok_fisik_baru=self.__stok_fisik_hasil_opname,
             alasan=self.__alasan_penyesuaian,
