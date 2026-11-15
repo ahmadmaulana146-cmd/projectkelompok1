@@ -40,7 +40,7 @@ class Kasir(User):
             raise ValueError("Shift kerja harus berupa string non-kosong.")
         self.__shift_kerja = value.strip()
 
-    def dapatkan_hak_akses(self) -> List[str]:
+    def dapatkan_hak_akses(self):
         return [
             "buat_transaksi_baru",
             "catat_data_pembeli",

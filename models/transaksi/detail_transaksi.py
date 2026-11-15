@@ -9,17 +9,15 @@ if TYPE_CHECKING:
 
 
 class DetailTransaksi:
-    """Menyimpan kuantitas pembelian dan mengunci snapshot harga satuan saat transaksi berlangsung (BR-16)."""
-
     def __init__(
         self,
-        id_detail: str,
-        barang: Barang,
-        jumlah_beli: int,
+        id_detail,
+        barang,
+        jumlah_beli,
         harga_satuan_saat_transaksi: Decimal,
         kode_aturan_diterapkan: Optional[str] = None,
     ) -> None:
-        self.__id_detail: str = ""
+        self.__id_detail = ""
         self.__barang: Optional[Barang] = None
         self.__jumlah_beli: int = 0
         self.__harga_satuan_saat_transaksi: Decimal = Decimal("0")
@@ -38,7 +36,7 @@ class DetailTransaksi:
         return self.__id_detail
 
     @id_detail.setter
-    def id_detail(self, value: str) -> None:
+    def id_detail(self, value) -> None:
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Detail harus berupa string non-kosong.")
         self.__id_detail = value.strip()
@@ -50,7 +48,7 @@ class DetailTransaksi:
         return self.__barang
 
     @barang.setter
-    def barang(self, value: Barang) -> None:
+    def barang(self, value) -> None:
         if not isinstance(value, Barang):
             raise ValueError("barang harus merupakan instance dari kelas Barang.")
         self.__barang = value
