@@ -4,23 +4,22 @@ from typing import Any, Dict, Optional
 
 
 class KualifikasiPembeli:
-    """Menghubungkan pembeli dengan kategori sasaran program subsidi/komoditas bersyarat."""
 
     def __init__(
         self,
-        id_kualifikasi: str,
-        kode_program_komoditas: str,
-        kategori_sasaran: str,
-        nomor_dokumen_pendukung: Optional[str] = None,
-        status_verifikasi: bool = True,
-        tanggal_berlaku_sampai: Optional[date] = None,
-    ) -> None:
-        self.__id_kualifikasi: str = ""
-        self.__kode_program_komoditas: str = ""
-        self.__kategori_sasaran: str = ""
-        self.__nomor_dokumen_pendukung: Optional[str] = None
-        self.__status_verifikasi: bool = False
-        self.__tanggal_berlaku_sampai: Optional[date] = None
+        id_kualifikasi,
+        kode_program_komoditas,
+        kategori_sasaran,
+        nomor_dokumen_pendukung = None,
+        status_verifikasi = True,
+        tanggal_berlaku_sampai = None,
+    ):
+        self.__id_kualifikasi = ""
+        self.__kode_program_komoditas = ""
+        self.__kategori_sasaran = ""
+        self.__nomor_dokumen_pendukung = None
+        self.__status_verifikasi = False
+        self.__tanggal_berlaku_sampai = None
 
         self.id_kualifikasi = id_kualifikasi
         self.kode_program_komoditas = kode_program_komoditas
@@ -30,66 +29,66 @@ class KualifikasiPembeli:
         self.tanggal_berlaku_sampai = tanggal_berlaku_sampai
 
     @property
-    def id_kualifikasi(self) -> str:
+    def id_kualifikasi(self):
         return self.__id_kualifikasi
 
     @id_kualifikasi.setter
-    def id_kualifikasi(self, value: str) -> None:
+    def id_kualifikasi(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Kualifikasi harus berupa string non-kosong.")
         self.__id_kualifikasi = value.strip()
 
     @property
-    def kode_program_komoditas(self) -> str:
+    def kode_program_komoditas(self):
         return self.__kode_program_komoditas
 
     @kode_program_komoditas.setter
-    def kode_program_komoditas(self, value: str) -> None:
+    def kode_program_komoditas(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Kode program komoditas harus berupa string non-kosong.")
         self.__kode_program_komoditas = value.strip().upper()
 
     @property
-    def kategori_sasaran(self) -> str:
+    def kategori_sasaran(self):
         return self.__kategori_sasaran
 
     @kategori_sasaran.setter
-    def kategori_sasaran(self, value: str) -> None:
+    def kategori_sasaran(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Kategori sasaran harus berupa string non-kosong.")
         self.__kategori_sasaran = value.strip().upper()
 
     @property
-    def nomor_dokumen_pendukung(self) -> Optional[str]:
+    def nomor_dokumen_pendukung(self):
         return self.__nomor_dokumen_pendukung
 
     @nomor_dokumen_pendukung.setter
-    def nomor_dokumen_pendukung(self, value: Optional[str]) -> None:
+    def nomor_dokumen_pendukung(self, value):
         if value is not None and not isinstance(value, str):
             raise ValueError("Nomor dokumen pendukung harus berupa string atau None.")
         self.__nomor_dokumen_pendukung = value.strip() if value else None
 
     @property
-    def status_verifikasi(self) -> bool:
+    def status_verifikasi(self):
         return self.__status_verifikasi
 
     @status_verifikasi.setter
-    def status_verifikasi(self, value: bool) -> None:
+    def status_verifikasi(self, value):
         if not isinstance(value, bool):
             raise ValueError("Status verifikasi harus bertipe boolean.")
         self.__status_verifikasi = value
 
     @property
-    def tanggal_berlaku_sampai(self) -> Optional[date]:
+    def tanggal_berlaku_sampai(self):
         return self.__tanggal_berlaku_sampai
 
     @tanggal_berlaku_sampai.setter
-    def tanggal_berlaku_sampai(self, value: Optional[date]) -> None:
+    def tanggal_berlaku_sampai(self, value):
         if value is not None and not isinstance(value, date):
             raise ValueError("Tanggal berlaku sampai harus berupa objek date atau None.")
         self.__tanggal_berlaku_sampai = value
 
-    def apakah_masih_berlaku(self) -> bool:
+    def apakah_masih_berlaku(self):
         """Memeriksa apakah kualifikasi telah terverifikasi dan belum kedaluwarsa."""
         if not self.status_verifikasi:
             return False
@@ -97,7 +96,7 @@ class KualifikasiPembeli:
             return self.tanggal_berlaku_sampai >= date.today()
         return True
 
-    def info_kualifikasi(self) -> Dict[str, Any]:
+    def info_kualifikasi(self):
         """Mengembalikan representasi kamus dari data kualifikasi."""
         return {
             "id_kualifikasi": self.id_kualifikasi,

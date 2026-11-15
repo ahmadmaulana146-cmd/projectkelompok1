@@ -9,29 +9,28 @@ if TYPE_CHECKING:
 
 
 class AturanPenjualan:
-    """Kelas domain untuk mengatur regulasi, kuota, HET, dan syarat kualifikasi penjualan komoditas khusus."""
 
     def __init__(
         self,
-        id_aturan: str,
-        kode_program_komoditas: str,
-        harga_eceran_tertinggi: Optional[Decimal] = None,
-        batas_maksimal_per_transaksi: Optional[int] = None,
-        batas_maksimal_per_periode: Optional[int] = None,
-        periode_kuota: str = "HARIAN",
-        wajib_identitas_nik: bool = False,
-        daftar_kategori_pembeli_diizinkan: Optional[List[str]] = None,
-        status_aktif: bool = True,
-    ) -> None:
-        self.__id_aturan: str = ""
-        self.__kode_program_komoditas: str = ""
-        self.__harga_eceran_tertinggi: Optional[Decimal] = None
-        self.__batas_maksimal_per_transaksi: Optional[int] = None
-        self.__batas_maksimal_per_periode: Optional[int] = None
-        self.__periode_kuota: str = ""
-        self.__wajib_identitas_nik: bool = False
-        self.__daftar_kategori_pembeli_diizinkan: List[str] = []
-        self.__status_aktif: bool = False
+        id_aturan,
+        kode_program_komoditas,
+        harga_eceran_tertinggi = None,
+        batas_maksimal_per_transaksi = None,
+        batas_maksimal_per_periode = None,
+        periode_kuota = "HARIAN",
+        wajib_identitas_nik = False,
+        daftar_kategori_pembeli_diizinkan = None,
+        status_aktif = True,
+    ):
+        self.__id_aturan = ""
+        self.__kode_program_komoditas = ""
+        self.__harga_eceran_tertinggi = None
+        self.__batas_maksimal_per_transaksi = None
+        self.__batas_maksimal_per_periode = None
+        self.__periode_kuota = ""
+        self.__wajib_identitas_nik = False
+        self.__daftar_kategori_pembeli_diizinkan = []
+        self.__status_aktif = False
 
         self.id_aturan = id_aturan
         self.kode_program_komoditas = kode_program_komoditas
@@ -46,31 +45,31 @@ class AturanPenjualan:
         self.status_aktif = status_aktif
 
     @property
-    def id_aturan(self) -> str:
+    def id_aturan(self):
         return self.__id_aturan
 
     @id_aturan.setter
-    def id_aturan(self, value: str) -> None:
+    def id_aturan(self, value: str):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Aturan harus berupa string non-kosong.")
         self.__id_aturan = value.strip()
 
     @property
-    def kode_program_komoditas(self) -> str:
+    def kode_program_komoditas(self):
         return self.__kode_program_komoditas
 
     @kode_program_komoditas.setter
-    def kode_program_komoditas(self, value: str) -> None:
+    def kode_program_komoditas(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Kode program komoditas harus berupa string non-kosong.")
         self.__kode_program_komoditas = value.strip().upper()
 
     @property
-    def harga_eceran_tertinggi(self) -> Optional[Decimal]:
+    def harga_eceran_tertinggi(self):
         return self.__harga_eceran_tertinggi
 
     @harga_eceran_tertinggi.setter
-    def harga_eceran_tertinggi(self, value: Optional[Decimal]) -> None:
+    def harga_eceran_tertinggi(self, value):
         if value is not None:
             if not isinstance(value, Decimal):
                 try:
@@ -82,53 +81,53 @@ class AturanPenjualan:
         self.__harga_eceran_tertinggi = value
 
     @property
-    def batas_maksimal_per_transaksi(self) -> Optional[int]:
+    def batas_maksimal_per_transaksi(self):
         return self.__batas_maksimal_per_transaksi
 
     @batas_maksimal_per_transaksi.setter
-    def batas_maksimal_per_transaksi(self, value: Optional[int]) -> None:
+    def batas_maksimal_per_transaksi(self, value):
         if value is not None:
             if not isinstance(value, int) or value <= 0:
                 raise ValueError("Batas maksimal per transaksi harus berupa integer positif.")
         self.__batas_maksimal_per_transaksi = value
 
     @property
-    def batas_maksimal_per_periode(self) -> Optional[int]:
+    def batas_maksimal_per_periode(self):
         return self.__batas_maksimal_per_periode
 
     @batas_maksimal_per_periode.setter
-    def batas_maksimal_per_periode(self, value: Optional[int]) -> None:
+    def batas_maksimal_per_periode(self, value):
         if value is not None:
             if not isinstance(value, int) or value <= 0:
                 raise ValueError("Batas maksimal per periode harus berupa integer positif.")
         self.__batas_maksimal_per_periode = value
 
     @property
-    def periode_kuota(self) -> str:
+    def periode_kuota(self):
         return self.__periode_kuota
 
     @periode_kuota.setter
-    def periode_kuota(self, value: str) -> None:
+    def periode_kuota(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Periode kuota harus berupa string non-kosong.")
         self.__periode_kuota = value.strip().upper()
 
     @property
-    def wajib_identitas_nik(self) -> bool:
+    def wajib_identitas_nik(self):
         return self.__wajib_identitas_nik
 
     @wajib_identitas_nik.setter
-    def wajib_identitas_nik(self, value: bool) -> None:
+    def wajib_identitas_nik(self, value):
         if not isinstance(value, bool):
             raise ValueError("wajib_identitas_nik harus bertipe boolean.")
         self.__wajib_identitas_nik = value
 
     @property
-    def daftar_kategori_pembeli_diizinkan(self) -> List[str]:
+    def daftar_kategori_pembeli_diizinkan(self):
         return list(self.__daftar_kategori_pembeli_diizinkan)
 
     @daftar_kategori_pembeli_diizinkan.setter
-    def daftar_kategori_pembeli_diizinkan(self, value: List[str]) -> None:
+    def daftar_kategori_pembeli_diizinkan(self, value):
         if not isinstance(value, list):
             raise ValueError("daftar_kategori_pembeli_diizinkan harus berupa list.")
         for item in value:
@@ -137,16 +136,16 @@ class AturanPenjualan:
         self.__daftar_kategori_pembeli_diizinkan = [item.strip().upper() for item in value]
 
     @property
-    def status_aktif(self) -> bool:
+    def status_aktif(self):
         return self.__status_aktif
 
     @status_aktif.setter
-    def status_aktif(self, value: bool) -> None:
+    def status_aktif(self, value):
         if not isinstance(value, bool):
             raise ValueError("status_aktif harus bertipe boolean.")
         self.__status_aktif = value
 
-    def validasi_kelayakan_pembeli(self, pembeli: Pembeli) -> HasilValidasi:
+    def validasi_kelayakan_pembeli(self, pembeli: Pembeli):
         """Memvalidasi identitas dan kualifikasi pembeli terhadap aturan komoditas."""
         from models.pembeli.pembeli import Pembeli
         if not isinstance(pembeli, Pembeli):
@@ -183,8 +182,8 @@ class AturanPenjualan:
         )
 
     def validasi_kuantitas_pembelian(
-        self, jumlah_diminta: int, akumulasi_periode: int = 0
-    ) -> HasilValidasi:
+        self, jumlah_diminta, akumulasi_periode = 0
+    ):
         """Memvalidasi batas maksimal kuantitas pembelian per transaksi maupun akumulasi periode."""
         if not isinstance(jumlah_diminta, int) or jumlah_diminta <= 0:
             return HasilValidasi(
@@ -230,8 +229,7 @@ class AturanPenjualan:
             pesan_validasi="Kuantitas pembelian memenuhi batasan kuota.",
         )
 
-    def hitung_harga_jual_komoditas(self, harga_dasar_barang: Decimal) -> Decimal:
-        """Menghitung harga jual dengan jaminan tidak melebihi HET pemerintah jika ditentukan."""
+    def hitung_harga_jual_komoditas(self, harga_dasar_barang: Decimal):
         if not isinstance(harga_dasar_barang, Decimal):
             harga_dasar_barang = Decimal(str(harga_dasar_barang))
         if self.harga_eceran_tertinggi is not None:
