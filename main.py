@@ -7,7 +7,7 @@ from models.inventaris import Barang, Kategori, Supplier
 from models.pembeli import AturanPenjualan, KualifikasiPembeli, Pembeli
 from models.transaksi import LayananLaporan
 
-
+"roja"
 def print_header(title: str): 
     print("\n" + "=" * 80)
     print(f" {title.upper()} ")
