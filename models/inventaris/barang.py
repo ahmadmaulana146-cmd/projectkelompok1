@@ -89,11 +89,11 @@ class Barang:
         self.__harga_dasar = value
 
     @property
-    def stok_tersedia(self) -> int:
+    def stok_tersedia(self):
         return self.__stok_tersedia
 
     @stok_tersedia.setter
-    def stok_tersedia(self, value: int):
+    def stok_tersedia(self, value):
         if not isinstance(value, int):
             raise ValueError("Stok tersedia harus berupa bilangan bulat (int).")
         if value < 0:
@@ -101,11 +101,11 @@ class Barang:
         self.__stok_tersedia = value
 
     @property
-    def stok_minimum(self) -> int:
+    def stok_minimum(self):
         return self.__stok_minimum
 
     @stok_minimum.setter
-    def stok_minimum(self, value: int):
+    def stok_minimum(self, value):
         if not isinstance(value, int):
             raise ValueError("Stok minimum harus berupa bilangan bulat (int).")
         if value < 0:
@@ -113,11 +113,11 @@ class Barang:
         self.__stok_minimum = value
 
     @property
-    def status_aktif(self) -> bool:
+    def status_aktif(self):
         return self.__status_aktif
 
     @status_aktif.setter
-    def status_aktif(self, value: bool):
+    def status_aktif(self, value):
         if not isinstance(value, bool):
             raise ValueError("Status aktif harus berupa boolean.")
         self.__status_aktif = value
@@ -143,12 +143,12 @@ class Barang:
             raise ValueError("Aturan penjualan harus merupakan instance dari AturanPenjualan.")
         self.__aturan_penjualan = value
 
-    def tambah_stok(self, jumlah: int, sumber = ""):
+    def tambah_stok(self, jumlah, sumber = ""):
         if not isinstance(jumlah, int) or jumlah <= 0:
             raise ValueError("Jumlah stok yang ditambahkan harus berupa bilangan bulat positif.")
         self.stok_tersedia = self.__stok_tersedia + jumlah
 
-    def kurangi_stok(self, jumlah: int, sumber = ""):
+    def kurangi_stok(self, jumlah, sumber = ""):
         if not isinstance(jumlah, int) or jumlah <= 0:
             raise ValueError("Jumlah stok yang dikurangkan harus berupa bilangan bulat positif.")
         if self.__stok_tersedia < jumlah:
@@ -158,19 +158,19 @@ class Barang:
             )
         self.stok_tersedia = self.__stok_tersedia - jumlah
 
-    def sesuaikan_stok_aktual(self, stok_fisik_baru: int, alasan):
+    def sesuaikan_stok_aktual(self, stok_fisik_baru, alasan):
         if not isinstance(stok_fisik_baru, int) or stok_fisik_baru < 0:
             raise ValueError("Stok fisik hasil opname harus berupa bilangan bulat non-negatif.")
         if not isinstance(alasan, str) or not alasan.strip():
             raise ValueError("Alasan penyesuaian stok wajib diisi (BR-10).")
         self.stok_tersedia = stok_fisik_baru
 
-    def apakah_stok_mencukupi(self, jumlah_diminta: int) -> bool:
+    def apakah_stok_mencukupi(self, jumlah_diminta):
         if not isinstance(jumlah_diminta, int) or jumlah_diminta <= 0:
             return False
         return self.__stok_tersedia >= jumlah_diminta
 
-    def apakah_mencapai_batas_minimum(self) -> bool:
+    def apakah_mencapai_batas_minimum(self):
         return self.__stok_tersedia <= self.__stok_minimum
 
     def dapatkan_harga_berlaku(self):
