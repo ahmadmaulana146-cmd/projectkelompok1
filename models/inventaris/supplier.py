@@ -3,21 +3,19 @@ from typing import Dict
 
 
 class Supplier:
-    """Kelas domain untuk merepresentasikan pemasok komoditas."""
-
     def __init__(
         self,
-        id_supplier: str,
-        nama_supplier: str,
-        jenis_instansi: str,
-        kontak_telepon: str,
-        alamat: str,
-    ) -> None:
-        self.__id_supplier: str = ""
-        self.__nama_supplier: str = ""
-        self.__jenis_instansi: str = ""
-        self.__kontak_telepon: str = ""
-        self.__alamat: str = ""
+        id_supplier,
+        nama_supplier,
+        jenis_instansi,
+        kontak_telepon,
+        alamat,
+    ):
+        self.__id_supplier = ""
+        self.__nama_supplier = ""
+        self.__jenis_instansi = ""
+        self.__kontak_telepon = ""
+        self.__alamat = ""
 
         self.id_supplier = id_supplier
         self.nama_supplier = nama_supplier
@@ -26,56 +24,56 @@ class Supplier:
         self.alamat = alamat
 
     @property
-    def id_supplier(self) -> str:
+    def id_supplier(self):
         return self.__id_supplier
 
     @id_supplier.setter
-    def id_supplier(self, value: str) -> None:
+    def id_supplier(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("ID Supplier harus berupa string non-kosong.")
         self.__id_supplier = value.strip()
 
     @property
-    def nama_supplier(self) -> str:
+    def nama_supplier(self):
         return self.__nama_supplier
 
     @nama_supplier.setter
-    def nama_supplier(self, value: str) -> None:
+    def nama_supplier(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Nama supplier harus berupa string non-kosong.")
         self.__nama_supplier = value.strip()
 
     @property
-    def jenis_instansi(self) -> str:
+    def jenis_instansi(self):
         return self.__jenis_instansi
 
     @jenis_instansi.setter
-    def jenis_instansi(self, value: str) -> None:
+    def jenis_instansi(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Jenis instansi harus berupa string non-kosong.")
         self.__jenis_instansi = value.strip()
 
     @property
-    def kontak_telepon(self) -> str:
+    def kontak_telepon(self):
         return self.__kontak_telepon
 
     @kontak_telepon.setter
-    def kontak_telepon(self, value: str) -> None:
+    def kontak_telepon(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Kontak telepon harus berupa string non-kosong.")
         self.__kontak_telepon = value.strip()
 
     @property
-    def alamat(self) -> str:
+    def alamat(self):
         return self.__alamat
 
     @alamat.setter
-    def alamat(self, value: str) -> None:
+    def alamat(self, value):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Alamat harus berupa string non-kosong.")
         self.__alamat = value.strip()
 
-    def perbarui_kontak(self, telepon: str, alamat: str) -> None:
+    def perbarui_kontak(self, telepon, alamat):
         """Memperbarui nomor kontak dan alamat supplier."""
         self.kontak_telepon = telepon
         self.alamat = alamat
