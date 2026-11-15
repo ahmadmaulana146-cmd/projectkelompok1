@@ -105,7 +105,7 @@ class Pembeli:
             raise ValueError("daftar_kualifikasi harus berupa list.")
         for item in value:
             if not isinstance(item, KualifikasiPembeli):
-                raise ValueError("Setiap elemen daftar kualifikasi harus objek KualifikasiPembeli.")
+                raise ValueError("Setiap elemen daftar kualifikasi harus merupakan objek KualifikasiPembeli.")
         self.__daftar_kualifikasi = list(value)
 
     def tambah_kualifikasi_komoditas(self, kualifikasi):
@@ -130,4 +130,6 @@ class Pembeli:
 
     def memiliki_identitas_valid(self):
         """Memeriksa apakah pembeli memiliki NIK terdaftar yang valid."""
-        return self.__nik_terenkripsi is not None
+        if not self.__nik_terenkripsi:
+            return False
+        return len(self.__nik_terenkripsi) >= 8
