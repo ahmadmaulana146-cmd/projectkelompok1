@@ -16,12 +16,22 @@ class Pembeli:
         tipe_pembeli_umum: bool = True,
         daftar_kualifikasi: Optional[List[KualifikasiPembeli]] = None,
     ) -> None:
+        self.__id_pembeli: str = ""
+        self.__nama_pembeli: str = ""
+        self.__nik_terenkripsi: Optional[str] = None
+        self.__nik_tampil_masked: Optional[str] = None
+        self.__alamat_domisili: str = ""
+        self.__tipe_pembeli_umum: bool = True
+        self.__daftar_kualifikasi: List[KualifikasiPembeli] = []
+
         self.id_pembeli = id_pembeli
         self.nama_pembeli = nama_pembeli
         self.alamat_domisili = alamat_domisili
         self.nik_terenkripsi = nik_terenkripsi
         self.tipe_pembeli_umum = tipe_pembeli_umum
-        self.daftar_kualifikasi = daftar_kualifikasi or []
+        self.daftar_kualifikasi = (
+            daftar_kualifikasi if daftar_kualifikasi is not None else []
+        )
 
     @property
     def id_pembeli(self) -> str:
@@ -29,9 +39,9 @@ class Pembeli:
 
     @id_pembeli.setter
     def id_pembeli(self, value: str) -> None:
-        if not value:
-            raise ValueError("ID Pembeli tidak boleh kosong.")
-        self.__id_pembeli = value
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("ID Pembeli harus berupa string non-kosong.")
+        self.__id_pembeli = value.strip()
 
     @property
     def nama_pembeli(self) -> str:
@@ -39,9 +49,9 @@ class Pembeli:
 
     @nama_pembeli.setter
     def nama_pembeli(self, value: str) -> None:
-        if not value:
-            raise ValueError("Nama pembeli tidak boleh kosong.")
-        self.__nama_pembeli = value
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Nama pembeli harus berupa string non-kosong.")
+        self.__nama_pembeli = value.strip()
 
     @property
     def nik_terenkripsi(self) -> Optional[str]:
@@ -49,17 +59,42 @@ class Pembeli:
 
     @nik_terenkripsi.setter
     def nik_terenkripsi(self, value: Optional[str]) -> None:
-        if value and len(value) < 8:
-            raise ValueError("Format NIK tidak valid (minimal 8 digit).")
-        self.__nik_terenkripsi = value or None
+        if value is not None:
+            if not isinstance(value, str):
+                raise ValueError("NIK harus berupa string atau None.")
+            clean_nik = value.strip()
+            if len(clean_nik) > 0 and len(clean_nik) < 8:
+                raise ValueError("Format NIK tidak valid (minimal 8 digit).")
+            self.__nik_terenkripsi = clean_nik
+            if len(clean_nik) >= 8:
+                self.__nik_tampil_masked = (
+                    clean_nik[:4] + "*" * (len(clean_nik) - 8) + clean_nik[-4:]
+                )
+            else:
+                self.__nik_tampil_masked = "*" * len(clean_nik)
+        else:
+            self.__nik_terenkripsi = None
+            self.__nik_tampil_masked = None
 
     @property
     def nik_tampil_masked(self) -> Optional[str]:
-        """NIK tersamar sesuai NFR-07, contoh: 3302********1234."""
-        nik = self.__nik_terenkripsi
-        if nik is None:
-            return None
-        return nik[:4] + "*" * (len(nik) - 8) + nik[-4:]
+        return self.__nik_tampil_masked
+
+    @nik_tampil_masked.setter
+    def nik_tampil_masked(self, value: Optional[str]) -> None:
+        if value is not None and not isinstance(value, str):
+            raise ValueError("nik_tampil_masked harus berupa string atau None.")
+        self.__nik_tampil_masked = value
+
+    @property
+    def alamat_domisili(self) -> str:
+        return self.__alamat_domisili
+
+    @alamat_domisili.setter
+    def alamat_domisili(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise ValueError("Alamat domisili harus berupa string.")
+        self.__alamat_domisili = value.strip()
 
     @property
     def tipe_pembeli_umum(self) -> bool:
@@ -81,27 +116,33 @@ class Pembeli:
             raise ValueError("daftar_kualifikasi harus berupa list.")
         for item in value:
             if not isinstance(item, KualifikasiPembeli):
-                raise ValueError("Setiap elemen daftar kualifikasi harus objek KualifikasiPembeli.")
+                raise ValueError("Setiap elemen daftar kualifikasi harus merupakan objek KualifikasiPembeli.")
         self.__daftar_kualifikasi = list(value)
 
     def tambah_kualifikasi_komoditas(self, kualifikasi: KualifikasiPembeli) -> None:
-        """Menambahkan kualifikasi program komoditas pembeli."""
+        """Menambahkan sertifikasi/kualifikasi program komoditas pembeli."""
         if not isinstance(kualifikasi, KualifikasiPembeli):
             raise ValueError("kualifikasi harus merupakan instance dari KualifikasiPembeli.")
         self.__daftar_kualifikasi.append(kualifikasi)
 
-    def dapatkan_kategori_pada_program(self, kode_program: str) -> Optional[str]:
-        """Mengambil kategori sasaran pembeli pada program komoditas tertentu."""
-        kode = kode_program.upper()
+    def memiliki_kualifikasi_aktif(self, kode_program: str) -> bool:
+        """Memeriksa apakah pembeli memiliki kualifikasi aktif pada kode program tertentu."""
+        kode_clean = kode_program.strip().upper()
         for k in self.__daftar_kualifikasi:
-            if k.kode_program_komoditas == kode and k.apakah_masih_berlaku():
+            if k.kode_program_komoditas == kode_clean and k.apakah_masih_berlaku():
+                return True
+        return False
+
+    def dapatkan_kategori_pada_program(self, kode_program: str) -> Optional[str]:
+        """Mengambil kategori sasaran pembeli pada suatu program komoditas tertentu."""
+        kode_clean = kode_program.strip().upper()
+        for k in self.__daftar_kualifikasi:
+            if k.kode_program_komoditas == kode_clean and k.apakah_masih_berlaku():
                 return k.kategori_sasaran
         return None
 
-    def memiliki_kualifikasi_aktif(self, kode_program: str) -> bool:
-        """Memeriksa apakah pembeli punya kualifikasi aktif pada program tertentu."""
-        return self.dapatkan_kategori_pada_program(kode_program) is not None
-
     def memiliki_identitas_valid(self) -> bool:
         """Memeriksa apakah pembeli memiliki NIK terdaftar yang valid."""
-        return self.__nik_terenkripsi is not None
+        if not self.__nik_terenkripsi:
+            return False
+        return len(self.__nik_terenkripsi) >= 8
