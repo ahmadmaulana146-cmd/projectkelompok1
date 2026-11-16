@@ -9,8 +9,7 @@ if TYPE_CHECKING:
 
 
 class BarangKeluar(AktivitasPersediaan):
-    """Subclass AktivitasPersediaan untuk pencatatan pengeluaran nonpenjualan (FR-07, BR-04)."""
-
+    
     PREFIX_ID: str = "OUT"
 
     def __init__(
@@ -21,12 +20,11 @@ class BarangKeluar(AktivitasPersediaan):
         jenis_keperluan_keluar: str,
         penerima_internal: str,
         catatan: str = "",
-    ) -> None:
-        # 1. Deklarasi atribut private (-) sesuai Tabel Pemetaan & Gambar 5.2
+    ) :
+
         self.__jenis_keperluan_keluar: str = ""
         self.__penerima_internal: str = ""
 
-        # 2. Mengirim data umum ke superclass (bernilai negatif sebagai tanda pengurangan stok)
         super().__init__(
             barang=barang,
             petugas=petugas,
@@ -34,11 +32,9 @@ class BarangKeluar(AktivitasPersediaan):
             catatan=catatan,
         )
 
-        # 3. Mengisi dan memvalidasi atribut spesifik BarangKeluar
+
         self.jenis_keperluan_keluar = jenis_keperluan_keluar
         self.penerima_internal = penerima_internal
-
-    # --- GETTER & SETTER ---
 
     @property
     def jenis_keperluan_keluar(self) -> str:
@@ -60,7 +56,6 @@ class BarangKeluar(AktivitasPersediaan):
             raise ValueError("Penerima internal / penanggung jawab wajib diisi.")
         self.__penerima_internal = value.strip()
 
-    # --- IMPLEMENTASI ABSTRACT METHOD (Sesuai Gambar 5.2) ---
 
     def validasi_aktivitas(self) -> bool:
         """Valid bila kuantitas > 0, stok mencukupi, serta keperluan & penerima terisi."""

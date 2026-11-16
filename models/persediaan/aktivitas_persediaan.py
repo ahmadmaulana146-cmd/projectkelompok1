@@ -11,9 +11,6 @@ if TYPE_CHECKING:
 
 
 class AktivitasPersediaan(ABC):
-    """Superclass abstrak untuk pencatatan aktivitas perubahan stok gudang (BR-17)."""
-
-    # Awalan ID standar, otomatis ditimpa oleh subclass ("IN", "OUT", "ADJ")
     PREFIX_ID: str = "AKT"
 
     def __init__(
@@ -24,8 +21,8 @@ class AktivitasPersediaan(ABC):
         catatan: str = "",
         stok_sebelum: int = 0,
         stok_sesudah: int = 0,
-    ) -> None:
-        # 1. Deklarasi atribut protected (#) sesuai Tabel Pemetaan & Gambar 5.2
+    ) :
+
         self._id_aktivitas: str = f"{self.PREFIX_ID}-{uuid.uuid4().hex[:8].upper()}"
         self._waktu_aktivitas: datetime = datetime.now()
         self._barang: Barang
@@ -35,7 +32,6 @@ class AktivitasPersediaan(ABC):
         self._stok_sesudah: int = 0
         self._catatan: str = ""
 
-        # 2. Pengisian & validasi melalui setter
         self.barang = barang
         self.petugas = petugas
         self.jumlah_perubahan = jumlah_perubahan
@@ -43,7 +39,6 @@ class AktivitasPersediaan(ABC):
         self.stok_sesudah = stok_sesudah
         self.catatan = catatan
 
-    # --- ATRIBUT READ-ONLY (Otomatis dibuat sistem, tidak boleh diubah dari luar) ---
 
     @property
     def id_aktivitas(self) -> str:
@@ -52,8 +47,6 @@ class AktivitasPersediaan(ABC):
     @property
     def waktu_aktivitas(self) -> datetime:
         return self._waktu_aktivitas
-
-    # --- ATRIBUT DENGAN GETTER & SETTER ---
 
     @property
     def barang(self) -> Barang:
@@ -111,8 +104,6 @@ class AktivitasPersediaan(ABC):
     def catatan(self, value: str) -> None:
         self._catatan = value.strip() if value else ""
 
-    # --- TEMPLATE METHOD & ABSTRACT METHODS (Sesuai Gambar 5.2) ---
-
     def proses_aktivitas(self) -> bool:
         """Template Method: memvalidasi aktivitas lalu menerapkan perubahan stok."""
         if not self.validasi_aktivitas():
@@ -133,10 +124,9 @@ class AktivitasPersediaan(ABC):
         """Menerapkan perubahan kuantitas stok pada objek Barang."""
         pass
 
-    # --- AUDIT & PELAPORAN ---
 
     def dapatkan_ringkasan_audit(self) -> Dict[str, Any]:
-        """Mengembalikan ringkasan jejak audit perubahan stok (BR-17)."""
+        """Mengembalikan ringkasan jejak audit perubahan stok."""
         return {
             "id_aktivitas": self.id_aktivitas,
             "waktu_aktivitas": self.waktu_aktivitas.isoformat(),
