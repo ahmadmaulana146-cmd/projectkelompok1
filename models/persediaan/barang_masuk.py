@@ -25,12 +25,12 @@ class BarangMasuk(AktivitasPersediaan):
         harga_beli_satuan: Decimal,
         catatan: str = "",
     ) -> None:
-        # 1. Deklarasi atribut private (-) sesuai Tabel Pemetaan & Gambar 5.2
+       
         self.__supplier: Supplier
         self.__nomor_referensi_surat_jalan: str = ""
         self.__harga_beli_satuan: Decimal = Decimal("0")
 
-        # 2. Mengirim data umum ke superclass
+
         super().__init__(
             barang=barang,
             petugas=petugas,
@@ -38,12 +38,9 @@ class BarangMasuk(AktivitasPersediaan):
             catatan=catatan,
         )
 
-        # 3. Mengisi dan memvalidasi atribut spesifik BarangMasuk
         self.supplier = supplier
         self.nomor_referensi_surat_jalan = nomor_referensi_surat_jalan
         self.harga_beli_satuan = harga_beli_satuan
-
-    # --- GETTER & SETTER ---
 
     @property
     def supplier(self) -> Supplier:
@@ -75,8 +72,7 @@ class BarangMasuk(AktivitasPersediaan):
             raise ValueError("Harga beli satuan tidak boleh bernilai negatif.")
         self.__harga_beli_satuan = value
 
-    # --- IMPLEMENTASI ABSTRACT METHOD (Sesuai Gambar 5.2) ---
-
+   
     def validasi_aktivitas(self) -> bool:
         """Valid bila jumlah > 0, supplier terisi, nomor surat jalan terisi, dan harga >= 0."""
         if self.jumlah_perubahan <= 0:
