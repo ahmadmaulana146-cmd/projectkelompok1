@@ -30,7 +30,7 @@ class PetugasGudang(User):
             status_aktif=status_aktif,
         )
 
-    def dapatkan_hak_akses(self) -> List[str]:
+    def dapatkan_hak_akses(self) :
         return [
             "catat_barang_masuk",
             "catat_barang_keluar",
