@@ -1,3 +1,5 @@
+
+
 from __future__ import annotations
 from datetime import date
 from decimal import Decimal
@@ -7,14 +9,14 @@ from models.inventaris import Barang, Kategori, Supplier
 from models.pembeli import AturanPenjualan, KualifikasiPembeli, Pembeli
 from models.transaksi import LayananLaporan
 
-"roja"
-def print_header(title: str): 
+
+def print_header(title: str) -> None:
     print("\n" + "=" * 80)
     print(f" {title.upper()} ")
     print("=" * 80)
 
 
-def print_step(step_name: str): 
+def print_step(step_name: str) -> None:
     print(f"\n>>> [STEP] {step_name}")
 
 

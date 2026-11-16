@@ -1,16 +1,15 @@
 from __future__ import annotations
-import uuid
 from decimal import Decimal
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from models.pengguna.user import User
+from models.persediaan.barang_masuk import BarangMasuk
+from models.persediaan.barang_keluar import BarangKeluar
+from models.persediaan.penyesuaian_stok import PenyesuaianStok
 
 if TYPE_CHECKING:
     from models.inventaris.barang import Barang
     from models.inventaris.supplier import Supplier
-    from models.persediaan.barang_masuk import BarangMasuk
-    from models.persediaan.barang_keluar import BarangKeluar
-    from models.persediaan.penyesuaian_stok import PenyesuaianStok
 
 
 class PetugasGudang(User):
@@ -45,68 +44,57 @@ class PetugasGudang(User):
         barang: Barang,
         supplier: Supplier,
         jumlah: int,
-        no_ref,
+        no_ref: str,
         harga_beli: Decimal,
-        ket,
+        ket: str = "",
     ) -> BarangMasuk:
-        from models.persediaan.barang_masuk import BarangMasuk
-        id_akt = f"IN-{uuid.uuid4().hex[:8].upper()}"
+        # id_aktivitas dan waktu_aktivitas sudah otomatis dibuat oleh sistem
         aktivitas = BarangMasuk(
-            id_aktivitas=id_akt,
             barang=barang,
             petugas=self,
-            jumlah_perubahan=jumlah,
-            catatan=ket,
             supplier=supplier,
+            jumlah_perubahan=jumlah,
             nomor_referensi_surat_jalan=no_ref,
             harga_beli_satuan=harga_beli,
+            catatan=ket,
         )
-        hasil = aktivitas.proses_aktivitas()
-        if not hasil.apakah_lolos():
-            raise ValueError(f"Gagal mencatat barang masuk: {hasil.pesan_validasi}")
+        aktivitas.proses_aktivitas()
         return aktivitas
 
     def catat_barang_keluar(
         self,
         barang: Barang,
         jumlah: int,
-        tujuan,
-        penerima,
-        ket,
+        tujuan: str,
+        penerima: str,
+        ket: str = "",
     ) -> BarangKeluar:
-        from models.persediaan.barang_keluar import BarangKeluar
-        id_akt = f"OUT-{uuid.uuid4().hex[:8].upper()}"
+        # id_aktivitas dan waktu_aktivitas sudah otomatis dibuat oleh sistem
         aktivitas = BarangKeluar(
-            id_aktivitas=id_akt,
             barang=barang,
             petugas=self,
             jumlah_perubahan=jumlah,
-            catatan=ket,
             jenis_keperluan_keluar=tujuan,
             penerima_internal=penerima,
+            catatan=ket,
         )
-        hasil = aktivitas.proses_aktivitas()
-        if not hasil.apakah_lolos():
-            raise ValueError(f"Gagal mencatat barang keluar: {hasil.pesan_validasi}")
+        aktivitas.proses_aktivitas()
         return aktivitas
 
     def catat_penyesuaian_stok(
         self,
         barang: Barang,
         stok_fisik: int,
-        alasan,
+        alasan: str,
+        ket: str = "",
     ) -> PenyesuaianStok:
-        from models.persediaan.penyesuaian_stok import PenyesuaianStok
-        id_akt = f"ADJ-{uuid.uuid4().hex[:8].upper()}"
+        # id_aktivitas dan waktu_aktivitas sudah otomatis dibuat oleh sistem
         aktivitas = PenyesuaianStok(
-            id_aktivitas=id_akt,
             barang=barang,
             petugas=self,
             stok_fisik_hasil_opname=stok_fisik,
             alasan_penyesuaian=alasan,
-            catatan=f"Penyesuaian stok fisik opname: {alasan}",
+            catatan=ket,
         )
-        hasil = aktivitas.proses_aktivitas()
-        if not hasil.apakah_lolos():
-            raise ValueError(f"Gagal mencatat penyesuaian stok: {hasil.pesan_validasi}")
+        aktivitas.proses_aktivitas()
         return aktivitas
