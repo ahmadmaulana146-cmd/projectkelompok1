@@ -188,8 +188,8 @@ def jalankan_simulasi_otomatis_interaktif():
         "4", "999",                                           
         "1", "2",                                            
         "3", "1",                                           
-        "2", "6",                                            
-        "2", "3",                                             
+        "2", "6",                                             # Ditolak Minyakita > batas 5
+        "2", "3",                                             # Lolos Minyakita 3 pouch
         "4", "2",                                             # Lolos Gula 2 kg
         "bayar",
         "50000",                                              # Ditolak pembayaran kurang (tetap DRAFT)
@@ -216,14 +216,15 @@ def jalankan_simulasi_otomatis_interaktif():
         "bayar",
         "50000",
 
-        "3",                                                  
+        "3",                                                  # Riwayat penjualan Kasir 1
         "4",                                                  # Logout Kasir 1
 
-        
+        # --- 4. LOGIN KASIR 2: UJI ISOLASI RIWAYAT KASIR (RBAC O-18) ---
         "kasir2", "kasir123",
-        "3",                                                  
-        "4",                                                  
-        
+        "3",                                                  # Harus kosong (terisolasi)
+        "4",                                                  # Logout Kasir 2
+
+        # --- 5. LOGIN ADMIN: UJI HISTORICAL IMMUTABILITY, LAPORAN & AUDIT ---
         "admin", "admin123",
         "4", "1", "BERAS_SPHP", "55000", "5", "5", "HARIAN", "n", "",
         "5", "y",                                             # Laporan Penjualan & Persediaan kritis
