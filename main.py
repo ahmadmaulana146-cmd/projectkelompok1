@@ -117,19 +117,13 @@ def main_loop_core():
     users, daftar_barang, daftar_supplier, daftar_kategori, daftar_transaksi, daftar_aktivitas, daftar_pembeli = setup_initial_data()
 
     while True:
-        print("\n============================================================")
-        print("   SIMIP - KOPERASI DESA MERAH PUTIH (PRD v0.2 - CLI PBO)   ")
+        print("\n==========================================================")
+        print("   SIMIP - KOPERASI DESA MERAH PUTIH ")
         print("============================================================")
-        print("Akun Bawaan Demo:")
-        print(" - Admin          : admin  / admin123")
-        print(" - Kasir 1        : kasir1 / kasir123")
-        print(" - Kasir 2        : kasir2 / kasir123")
-        print(" - Petugas Gudang : gudang / gudang123")
-        print("Ketik 'keluar' pada Username untuk menghentikan program.")
 
         username = input("\nUsername : ").strip()
         if username.lower() == "keluar":
-            print("Terima kasih telah menggunakan SIMIP Kopdes Merah Putih.")
+            print("Berhasil keluar dari SIMIP")
             sys.exit(0)
 
         password = input("Password : ").strip()
@@ -144,63 +138,58 @@ def main_loop_core():
             elif isinstance(user_obj, PetugasGudang):
                 menu_petugas_gudang(user_obj, daftar_barang, daftar_supplier, daftar_aktivitas)
         else:
-            print("[Login Gagal] Username/password salah atau akun dalam status NONAKTIF (FR-01).")
+            print("Login Gagal : Username/password salah atau akun dalam status NONAKTIF")
 
 
 
 def jalankan_simulasi_otomatis_interaktif():
-    """
-    Menjalankan seluruh alur aplikasi secara otomatis dengan mensimulasikan
-    input keyboard pengguna (mock_input) di semua peran dan skenario negatif/positif.
-    """
+
     print("==================================================================")
     print("  SIMULASI OTOMATIS KOMPREHENSIF SIMIP PRD v0.2 (SEMUA SKENARIO)  ")
     print("==================================================================")
 
     simulated_inputs = [
-        # --- 0. UJI LOGIN GAGAL (FR-01 / BR-01) ---
         "admin", "password_salah",
 
-        # --- 1. LOGIN ADMIN: KELOLA PENGGUNA, MASTER BARANG, KATEGORI, SUPPLIER & ATURAN ---
         "admin", "admin123",
         "1", "tambah", "kasir_uji", "rahasia123", "Kasir Uji", "KASIR", "Malam",
         "1", "nonaktifkan", "kasir_uji",
-        "7",                                                  # Logout sementara uji akun nonaktif
-        "kasir_uji", "rahasia123",                            # Harus gagal login (NONAKTIF)
+        "7",                                                  
+        "kasir_uji", "rahasia123",                            
         "admin", "admin123",
         "1", "aktifkan", "kasir_uji",
 
-        # Master Barang: uji kode duplikat, tambah barang, soft-delete, & ubah harga > HET
-        "2", "tambah", "BRG-001",                             # Ditolak (BR-02 kode duplikat)
+       
+        "2", "tambah", "BRG-001",                            
         "2", "tambah", "BRG-005", "Tepung Terigu 1kg", "Kg", "12000", "5", "3",
         "2", "tambah", "BRG-006", "Barang Uji Nonaktif", "Pcs", "5000", "2", "3",
         "2", "nonaktifkan", "BRG-006",
-        "2", "ubah", "BRG-001", "Beras SPHP 5kg", "65000",    # Warning p = min(h, H)
+        "2", "ubah", "BRG-001", "Beras SPHP 5kg", "65000",    
         "4", "1", "BERAS_SPHP", "62500", "5", "5", "HARIAN", "n", "",
 
-        # Kategori & Supplier
+       
         "3", "kategori", "Bumbu Dapur", "Aneka bumbu masak",
         "3", "supplier", "PT Pangan Nusantara", "DISTRIBUTOR_UMUM", "0811223344", "Semarang",
-        "7",                                                  # Logout Admin
+        "7",                                                  
 
-        # --- 2. LOGIN PETUGAS GUDANG: MUTASI STOK & VALIDASI NEGATIF (FR-14..17) ---
+       
         "gudang", "gudang123",
         "1", "5", "3", "25", "SJ-2026-099", "10500", "Stok awal tepung",
-        "2", "4", "999", "RUSAK", "Staff", "Uji lebih stok",              # Ditolak stok kurang
+        "2", "4", "999", "RUSAK", "Staff", "Uji lebih stok",              
         "2", "4", "2", "RUSAK", "Staff Gudang", "Kemasan gula sobek",
         "3", "3", "6", "Opname tabung gas", "Selisih fisik LPG",
-        "4",                                                               # Lihat riwayat persediaan
-        "5",                                                               # Logout Gudang
+        "4",                                                          
+        "5",                                                               
 
-        # --- 3. LOGIN KASIR 1: UJI SELURUH SKENARIO PENJUALAN & REGULASI (FR-07..13) ---
+        
         "kasir1", "kasir123",
-        # 3A. Pembeli Umum: tolak stok kurang, tolak SPHP anonim, tolak LPG tanpa NIK, tolak kuota Minyakita
+        
         "1", "1",
-        "4", "999",                                           # Ditolak stok kurang
-        "1", "2",                                             # Ditolak SPHP anonim
-        "3", "1",                                             # Ditolak LPG tanpa NIK
-        "2", "6",                                             # Ditolak Minyakita > batas 5
-        "2", "3",                                             # Lolos Minyakita 3 pouch
+        "4", "999",                                           
+        "1", "2",                                            
+        "3", "1",                                           
+        "2", "6",                                            
+        "2", "3",                                             
         "4", "2",                                             # Lolos Gula 2 kg
         "bayar",
         "50000",                                              # Ditolak pembayaran kurang (tetap DRAFT)
@@ -227,15 +216,14 @@ def jalankan_simulasi_otomatis_interaktif():
         "bayar",
         "50000",
 
-        "3",                                                  # Riwayat penjualan Kasir 1
+        "3",                                                  
         "4",                                                  # Logout Kasir 1
 
-        # --- 4. LOGIN KASIR 2: UJI ISOLASI RIWAYAT KASIR (RBAC O-18) ---
+        
         "kasir2", "kasir123",
-        "3",                                                  # Harus kosong (terisolasi)
-        "4",                                                  # Logout Kasir 2
-
-        # --- 5. LOGIN ADMIN: UJI HISTORICAL IMMUTABILITY, LAPORAN & AUDIT ---
+        "3",                                                  
+        "4",                                                  
+        
         "admin", "admin123",
         "4", "1", "BERAS_SPHP", "55000", "5", "5", "HARIAN", "n", "",
         "5", "y",                                             # Laporan Penjualan & Persediaan kritis

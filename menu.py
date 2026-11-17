@@ -502,7 +502,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
 def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supplier: list, daftar_aktivitas: list):
     while True:
         cek_peringatan_stok_minimum(daftar_barang)
-        print("\n========================================================")
+        print("\n======================================================")
         print(f"  MENU PETUGAS GUDANG ({petugas.nama_lengkap})")
         print("========================================================")
         print("1. Catat Barang Masuk dari Supplier (FR-14)")
@@ -575,7 +575,7 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
                 print(f"[Error] {e}")
 
         elif pilih == "4":
-            print("\n--- RIWAYAT AKTIVITAS PERSEDIAAN (BACA SAJA) ---")
+            print("\n--- RIWAYAT AKTIVITAS PERSEDIAAN ---")
             if not daftar_aktivitas:
                 print("[Info] Belum ada riwayat mutasi gudang.")
             for akt in daftar_aktivitas:
