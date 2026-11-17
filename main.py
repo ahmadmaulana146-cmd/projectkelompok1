@@ -1,15 +1,9 @@
-"""
-Sistem Manajemen Inventaris dan Penjualan (SIMIP)
-Koperasi Desa Merah Putih (PRD v0.2 - Aplikasi CLI PBO)
-Lokasi File: main.py
-"""
 
 from __future__ import annotations
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 import sys
 
-# --- IMPOR 19 KELAS DOMAIN MURNI SESUAI ARSITEKTUR PROYEK ---
 from models.pengguna.user import User
 from models.pengguna.admin import Admin
 from models.pengguna.kasir import Kasir
@@ -34,11 +28,6 @@ from models.transaksi.detail_transaksi import DetailTransaksi
 from models.transaksi.pembayaran import Pembayaran
 from models.transaksi.layanan_laporan import LayananLaporan
 
-
-# =====================================================================
-# 1. INISIALISASI DATA AWAL (IN-MEMORY COLLECTIONS & PARAMETER PRD §7)
-# =====================================================================
-
 def setup_initial_data():
     """Menginisialisasi data master awal dalam memori aktif sesuai regulasi PRD §7."""
     kat_sembako = Kategori("KAT-01", "Sembako & Pangan Bersubsidi", "Komoditas pangan program pemerintah")
@@ -49,7 +38,6 @@ def setup_initial_data():
     sup_pertamina = Supplier("SUP-02", "Agen Gas Sejahtera", "AGEN_PERTAMINA", "08129876543", "Semarang")
     sup_umum = Supplier("SUP-03", "CV Distributor Makmur", "DISTRIBUTOR_UMUM", "08123456789", "Surabaya")
 
-    # 1. Beras SPHP: HET Rp 62.500/pak (5kg), maks 5 pak/transaksi & 5 pak/hari, wajib terdaftar
     aturan_sphp = AturanPenjualan(
         id_aturan="ATR-SPHP-01",
         kode_program_komoditas="BERAS_SPHP",
@@ -62,7 +50,6 @@ def setup_initial_data():
         status_aktif=True
     )
 
-    # 2. Minyakita: HET Rp 15.700/liter, batas transaksi 5 liter
     aturan_minyakita = AturanPenjualan(
         id_aturan="ATR-MYK-01",
         kode_program_komoditas="MINYAKITA",
@@ -136,15 +123,8 @@ def setup_initial_data():
     )
 
 
-# =====================================================================
-# 2. FUNGSI PEMBANTU LOGIKA BISNIS UMUM (KUOTA, VALIDASI & STOK)
-# =====================================================================
-
 def apakah_wajib_pembeli_terdaftar(aturan: AturanPenjualan | None) -> bool:
-    """
-    Mengecek secara umum apakah aturan penjualan mewajibkan pembeli terdaftar
-    (tidak boleh Pembeli Umum/anonim), berlaku untuk program lama maupun produk baru.
-    """
+    
     if not aturan or not aturan.status_aktif:
         return False
     return bool(
@@ -155,7 +135,7 @@ def apakah_wajib_pembeli_terdaftar(aturan: AturanPenjualan | None) -> bool:
 
 
 def hitung_akumulasi_kuota_pembeli(pembeli: Pembeli, kode_program: str, periode_kuota: str, daftar_transaksi: list) -> int:
-    """Menghitung total kuantitas pembelian berstatus SELESAI dalam jendela periode kuota."""
+
     if pembeli.tipe_pembeli_umum or not kode_program:
         return 0
 
@@ -186,32 +166,28 @@ def hitung_akumulasi_kuota_pembeli(pembeli: Pembeli, kode_program: str, periode_
 
 
 def cek_peringatan_stok_minimum(daftar_barang: list) -> list:
-    """Menampilkan banner peringatan teks jika ada barang mencapai stok minimum (FR-17)."""
+   
     barang_kritis = [b for b in daftar_barang if b.status_aktif and b.apakah_mencapai_batas_minimum()]
     if barang_kritis:
         print("\n" + "!" * 60)
-        print("  [PERINGATAN STOK MINIMUM] Segera lakukan pengadaan ulang:")
+        print("Segera lakukan pengadaan ulang:")
         for b in barang_kritis:
             print(f"   * [{b.kode_barang}] {b.nama_barang} -> Sisa: {b.stok_tersedia} {b.satuan} (Min: {b.stok_minimum})")
         print("!" * 60)
     return barang_kritis
 
 
-# =====================================================================
-# 3. MODUL ANTARMUKA MENU ADMIN (FR-02 s.d. FR-06, FR-18 s.d. FR-20)
-# =====================================================================
-
 def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: list, daftar_supplier: list, daftar_transaksi: list, daftar_aktivitas: list):
     while True:
         print("\n========================================================")
         print(f"  MENU ADMIN ({admin.nama_lengkap})")
         print("========================================================")
-        print("1. Kelola Pengguna Sistem (FR-02)")
-        print("2. Kelola Master Barang / Tambah Produk (FR-03)")
-        print("3. Kelola Kategori & Supplier (FR-04, FR-05)")
-        print("4. Tetapkan / Cabut Aturan Penjualan & HET Komoditas (FR-06)")
-        print("5. Laporan Penjualan & Persediaan (FR-18)")
-        print("6. Audit Riwayat Transaksi & Mutasi Stok (FR-19, FR-20)")
+        print("1. Kelola pengguna sistem ")
+        print("2. Kelola master barang / tambah produk")
+        print("3. Kelola kategori & supplier")
+        print("4. Tetapkan / cabut aturan penjualan & HET Komoditas")
+        print("5. Laporan penjualan & persediaan")
+        print("6. Audit riwayat transaksi & mutasi stok")
         print("7. Logout")
         pilih = input("Pilih menu (1-7): ").strip()
 
@@ -226,39 +202,39 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                 if aksi == "tambah":
                     uname = input("Username baru: ").strip()
                     if uname in users:
-                        print("[Error] Username sudah digunakan.")
+                        print("Username sudah digunakan.")
                         continue
-                    pwd = input("Password (min 6 karakter): ").strip()
-                    if len(pwd) < 6:
-                        print("[Error] Password minimal 6 karakter.")
+                    pw = input("Password (min 6 karakter): ").strip()
+                    if len(pw) < 6:
+                        print("[ Password minimal 6 karakter.")
                         continue
                     nama = input("Nama lengkap: ").strip()
                     peran = input("Peran (ADMIN / KASIR / PETUGAS_GUDANG): ").strip().upper()
                     uid = f"U-{len(users)+1:02d}"
 
                     if peran == "ADMIN":
-                        u_baru = Admin(uid, uname, User.hash_password(pwd), nama)
+                        u_baru = Admin(uid, uname, User.hash_password(pw), nama)
                     elif peran == "KASIR":
                         shift = input("Shift kerja (Pagi/Siang/Malam): ").strip()
-                        u_baru = Kasir(uid, uname, User.hash_password(pwd), nama, shift)
+                        u_baru = Kasir(uid, uname, User.hash_password(pw), nama, shift)
                     elif peran == "PETUGAS_GUDANG":
-                        u_baru = PetugasGudang(uid, uname, User.hash_password(pwd), nama)
+                        u_baru = PetugasGudang(uid, uname, User.hash_password(pw), nama)
                     else:
-                        print("[Error] Peran tidak valid.")
+                        print("Peran tidak valid.")
                         continue
 
                     admin.kelola_pengguna(u_baru, "tambah")
                     users[uname] = u_baru
-                    print(f"[Sukses] Pengguna '{uname}' berhasil ditambahkan.")
+                    print(f"Pengguna '{uname}' berhasil ditambahkan.")
                 elif aksi in ("aktifkan", "nonaktifkan"):
                     uname = input("Masukkan username target: ").strip()
                     if uname not in users:
-                        print("[Error] Username tidak ditemukan.")
+                        print("Username tidak ditemukan.")
                     elif uname == admin.username:
-                        print("[Error] Tidak dapat menonaktifkan akun sendiri yang sedang login.")
+                        print("Tidak dapat menonaktifkan akun sendiri yang sedang login.")
                     else:
                         admin.kelola_pengguna(users[uname], aksi)
-                        print(f"[Sukses] Status akun '{uname}' berhasil di-{aksi}.")
+                        print(f"Status akun '{uname}' berhasil di-{aksi}.")
             except Exception as e:
                 print(f"[Error] {e}")
 
@@ -276,7 +252,7 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     saran_kode = f"BRG-{len(daftar_barang)+1:03d}"
                     kode = input(f"Kode Barang unik (contoh {saran_kode}): ").strip().upper() or saran_kode
                     if any(b.kode_barang == kode for b in daftar_barang):
-                        print("[Error] Kode barang sudah terdaftar (BR-02).")
+                        print("Kode barang sudah terdaftar (BR-02).")
                         continue
                     nama = input("Nama Produk: ").strip()
                     satuan = input("Satuan (Pak/Pouch/Tabung/Kg/Sak/Pcs/dll): ").strip()
@@ -292,13 +268,13 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     brg_baru = Barang(kode, nama, satuan, harga, 0, stok_min, True, kat_pilih, None)
                     admin.kelola_barang(brg_baru, "tambah")
                     daftar_barang.append(brg_baru)
-                    print(f"[Sukses] Produk '{nama}' ({kode}) ditambahkan dengan stok awal 0.")
-                    print("[Info] Jika produk memiliki HET/kuota khusus, atur melalui Menu 4.")
+                    print(f"Produk '{nama}' ({kode}) ditambahkan dengan stok awal 0.")
+                    print("Jika produk memiliki HET/kuota khusus, atur melalui Menu 4.")
                 elif aksi == "ubah":
                     kode = input("Masukkan Kode Barang yang akan diubah: ").strip().upper()
                     brg = next((b for b in daftar_barang if b.kode_barang == kode), None)
                     if not brg:
-                        print("[Error] Barang tidak ditemukan.")
+                        print("Barang tidak ditemukan.")
                         continue
                     brg.nama_barang = input(f"Nama baru ({brg.nama_barang}): ").strip() or brg.nama_barang
                     h_str = input(f"Harga dasar baru (Rp {brg.harga_dasar}, Enter jika tetap): ").strip()
@@ -307,16 +283,16 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                         brg.harga_dasar = h_baru
                         if brg.aturan_penjualan and brg.aturan_penjualan.harga_eceran_tertinggi:
                             if h_baru > brg.aturan_penjualan.harga_eceran_tertinggi:
-                                print(f"[WARNING] Harga dasar (Rp {h_baru}) melebihi HET (Rp {brg.aturan_penjualan.harga_eceran_tertinggi}). "
+                                print(f"Harga dasar (Rp {h_baru}) melebihi HET (Rp {brg.aturan_penjualan.harga_eceran_tertinggi}). "
                                       f"Harga jual otomatis dibatasi ke HET (p = min(h, H)).")
                     admin.kelola_barang(brg, "ubah")
-                    print("[Sukses] Data barang diperbarui.")
+                    print("Data barang diperbarui.")
                 elif aksi in ("aktifkan", "nonaktifkan"):
                     kode = input(f"Masukkan Kode Barang yang akan di-{aksi}: ").strip().upper()
                     brg = next((b for b in daftar_barang if b.kode_barang == kode), None)
                     if brg:
                         admin.kelola_barang(brg, aksi)
-                        print(f"[Sukses] Barang {brg.nama_barang} berhasil di-{aksi}.")
+                        print(f"Barang {brg.nama_barang} berhasil di-{aksi}.")
                     else:
                         print("[Error] Barang tidak ditemukan.")
             except Exception as e:
@@ -339,7 +315,7 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     kat_baru = Kategori(kid, knama, kdesk)
                     admin.kelola_kategori(kat_baru, "tambah")
                     daftar_kategori.append(kat_baru)
-                    print("[Sukses] Kategori ditambahkan.")
+                    print("Kategori ditambahkan.")
                 elif sub == "supplier":
                     sid = f"SUP-{len(daftar_supplier)+1:02d}"
                     snama = input("Nama Supplier: ").strip()
@@ -349,7 +325,7 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     sup_baru = Supplier(sid, snama, sjenis, stelp, salamat)
                     admin.kelola_supplier(sup_baru, "tambah")
                     daftar_supplier.append(sup_baru)
-                    print("[Sukses] Supplier ditambahkan.")
+                    print("Supplier ditambahkan.")
             except Exception as e:
                 print(f"[Error] {e}")
 
@@ -365,7 +341,7 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     mode_aturan = input("Aksi (atur / hapus_aturan): ").strip().lower() or "atur"
                     if mode_aturan == "hapus_aturan":
                         b.aturan_penjualan = None
-                        print(f"[Sukses] Aturan khusus dicabut. {b.nama_barang} sekarang dijual sebagai produk umum.")
+                        print(f"Aturan khusus dicabut. {b.nama_barang} sekarang dijual sebagai produk umum.")
                         continue
 
                     prog = input("Kode Program Komoditas (mis. BERAS_SPHP / MINYAKITA / LPG_3KG / PUPUK_SUBSIDI): ").strip().upper()
@@ -391,8 +367,8 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
                     )
                     admin.tetapkan_aturan_penjualan(b, aturan_baru)
                     if b.harga_dasar > het_baru:
-                        print(f"[WARNING] Harga dasar (Rp {b.harga_dasar}) > HET baru (Rp {het_baru}). Harga jual dibatasi ke Rp {het_baru}.")
-                    print("[Sukses] Aturan penjualan baru berhasil diterapkan!")
+                        print(f"Harga dasar (Rp {b.harga_dasar}) > HET baru (Rp {het_baru}). Harga jual dibatasi ke Rp {het_baru}.")
+                    print("Aturan penjualan baru berhasil diterapkan!")
             except Exception as e:
                 print(f"[Error] {e}")
 
@@ -403,9 +379,9 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
             lap_jual = svc.hasilkan_laporan_penjualan(awal_tahun, hari_ini)
             print("\n================ LAPORAN PENJUALAN ================")
             print(f"Periode          : {lap_jual['periode_awal']} s.d. {lap_jual['periode_akhir']}")
-            print(f"Transaksi Selesai: {lap_jual['jumlah_transaksi']}")
-            print(f"Total Item Terjual: {lap_jual['total_item_terjual']}")
-            print(f"Total Omset      : Rp {lap_jual['total_omset']}")
+            print(f"Transaksi selesai: {lap_jual['jumlah_transaksi']}")
+            print(f"Total Item terjual: {lap_jual['total_item_terjual']}")
+            print(f"Total omset      : Rp {lap_jual['total_omset']}")
 
             print("\n================ LAPORAN PERSEDIAAN ===============")
             hanya_kritis = input("Tampilkan hanya barang stok kritis? (y/n): ").strip().lower() == "y"
@@ -437,18 +413,15 @@ def menu_admin(admin: Admin, users: dict, daftar_barang: list, daftar_kategori: 
             print("[Error] Pilihan tidak valid.")
 
 
-# =====================================================================
-# 4. MODUL ANTARMUKA MENU KASIR (FR-07 s.d. FR-13, MATRIKS O-18)
-# =====================================================================
 
 def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_transaksi: list):
     while True:
         print("\n========================================================")
         print(f"  MENU KASIR ({kasir.nama_lengkap} - Shift {kasir.shift_kerja})")
         print("========================================================")
-        print("1. Transaksi Penjualan Baru (FR-07 s.d. FR-13)")
-        print("2. Daftarkan Kualifikasi Komoditas Pembeli (FR-08)")
-        print("3. Riwayat Penjualan Saya (FR-19, FR-20)")
+        print("1. Transaksi Penjualan Baru")
+        print("2. Daftarkan Kualifikasi Komoditas Pembeli")
+        print("3. Riwayat Penjualan Saya")
         print("4. Logout")
         pilih = input("Pilih menu (1-4): ").strip()
 
@@ -465,7 +438,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                     pembeli_aktif = kasir.catat_data_pembeli(nama="Pembeli Umum", nik=None, alamat="-")
                 elif opsi_p == "2":
                     if not daftar_pembeli:
-                        print("[Info] Belum ada pembeli terdaftar.")
+                        print("Belum ada pembeli terdaftar.")
                         continue
                     for idx, p in enumerate(daftar_pembeli):
                         print(f" [{idx+1}] {p.nama_pembeli} | NIK: {p.nik_tampil_masked or 'Tidak Ada'} | Alamat: {p.alamat_domisili}")
@@ -484,7 +457,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                     alamat_p = input("Alamat Domisili: ").strip()
                     pembeli_aktif = kasir.catat_data_pembeli(nama=nama_p, nik=nik_p or None, alamat=alamat_p)
                     daftar_pembeli.append(pembeli_aktif)
-                    print(f"[Sukses] Pembeli terdaftar (NIK tersamar: {pembeli_aktif.nik_tampil_masked or '-'}).")
+                    print(f"Pembeli terdaftar (NIK tersamar: {pembeli_aktif.nik_tampil_masked or '-'}).")
                 else:
                     print("[Error] Pilihan tidak valid.")
                     continue
@@ -493,7 +466,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                 continue
 
             transaksi = kasir.buat_transaksi_baru(pembeli=pembeli_aktif)
-            print(f"\n[Sukses] Draft Transaksi dibuat: {transaksi.nomor_transaksi}")
+            print(f"\nDraft Transaksi dibuat: {transaksi.nomor_transaksi}")
 
             while True:
                 print("\n--- DAFTAR BARANG AKTIF ---")
@@ -508,7 +481,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                 if pilih_b == "batal":
                     transaksi.batalkan_transaksi("Dibatalkan oleh kasir sebelum pembayaran.")
                     daftar_transaksi.append(transaksi)
-                    print("[Info] Transaksi dibatalkan.")
+                    print("Transaksi dibatalkan.")
                     break
 
                 try:
@@ -522,7 +495,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
 
                     # Validasi umum berdasarkan sifat aturan penjualan (tanpa hardcode nama program)
                     if apakah_wajib_pembeli_terdaftar(brg.aturan_penjualan) and pembeli_aktif.tipe_pembeli_umum:
-                        print(f"[DITOLAK] Komoditas {brg.aturan_penjualan.kode_program_komoditas} mewajibkan pembeli terdaftar (bukan Pembeli Umum).")
+                        print(f"Komoditas {brg.aturan_penjualan.kode_program_komoditas} mewajibkan pembeli terdaftar (bukan Pembeli Umum).")
                         continue
 
                     akumulasi = 0
@@ -541,26 +514,26 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                         hasil = transaksi.tambah_item_barang(barang=brg, jumlah=total_jml_baru, akumulasi_periode=akumulasi)
                         if not hasil.apakah_lolos():
                             transaksi.tambah_item_barang(barang=brg, jumlah=item_existing.jumlah_beli, akumulasi_periode=akumulasi)
-                            print(f"[DITOLAK] {hasil.pesan_validasi}")
+                            print(f"{hasil.pesan_validasi}")
                         else:
-                            print(f"[Berhasil] Kuantitas {brg.nama_barang} diperbarui menjadi {total_jml_baru} {brg.satuan}.")
+                            print(f"Kuantitas {brg.nama_barang} diperbarui menjadi {total_jml_baru} {brg.satuan}.")
                             print(f"Subtotal Tagihan Sementara: Rp {transaksi.total_tagihan}")
                     else:
                         hasil = transaksi.tambah_item_barang(barang=brg, jumlah=jml, akumulasi_periode=akumulasi)
                         if hasil.apakah_lolos():
-                            print(f"[Berhasil] {hasil.pesan_validasi}")
-                            print(f"Subtotal Tagihan Sementara: Rp {transaksi.total_tagihan}")
+                            print(f"{hasil.pesan_validasi}")
+                            print(f"Subtotal tagihan sementara: Rp {transaksi.total_tagihan}")
                         else:
-                            print(f"[DITOLAK] {hasil.pesan_validasi}")
+                            print(f"{hasil.pesan_validasi}")
 
                 except ValueError as e:
-                    print(f"[Error] Input tidak valid: {e}")
+                    print(f"Input tidak valid: {e}")
 
             if transaksi.status_transaksi == "DRAFT":
                 if len(transaksi.daftar_detail) == 0:
                     transaksi.batalkan_transaksi("Keranjang belanja kosong.")
                     daftar_transaksi.append(transaksi)
-                    print("[Info] Keranjang kosong, transaksi dibatalkan otomatis.")
+                    print("Keranjang kosong, transaksi dibatalkan otomatis.")
                 else:
                     print("\n================ RINGKASAN TAGIHAN ================")
                     for d in transaksi.daftar_detail:
@@ -573,7 +546,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                             if bayar_str.lower() == "batal":
                                 transaksi.batalkan_transaksi("Pembayaran dibatalkan kasir.")
                                 daftar_transaksi.append(transaksi)
-                                print("[Info] Transaksi dibatalkan.")
+                                print("Transaksi dibatalkan.")
                                 break
 
                             nominal_bayar = Decimal(bayar_str)
@@ -584,7 +557,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                             print("\n" + "=" * 50)
                             print("       STRUK PEMBAYARAN - KOPDES MERAH PUTIH      ")
                             print("=" * 50)
-                            print(f"No. Transaksi : {transaksi.nomor_transaksi}")
+                            print(f"No. transaksi : {transaksi.nomor_transaksi}")
                             print(f"Waktu         : {transaksi.waktu_transaksi.strftime('%Y-%m-%d %H:%M:%S')}")
                             print(f"Kasir         : {kasir.nama_lengkap}")
                             print(f"Pembeli       : {pembeli_aktif.nama_pembeli} ({pembeli_aktif.nik_tampil_masked or 'Umum'})")
@@ -592,15 +565,15 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                             for d in transaksi.daftar_detail:
                                 print(f"{d.barang.nama_barang} x{d.jumlah_beli} @Rp {d.harga_satuan_saat_transaksi} = Rp {d.subtotal}")
                             print("-" * 50)
-                            print(f"Total Tagihan : Rp {transaksi.total_tagihan}")
-                            print(f"Tunai Dibayar : Rp {pembayaran.nominal_dibayar}")
+                            print(f"Total tagihan : Rp {transaksi.total_tagihan}")
+                            print(f"Tunai dibayar : Rp {pembayaran.nominal_dibayar}")
                             print(f"Kembalian     : Rp {pembayaran.nominal_kembalian}")
                             print("=" * 50)
 
                             cek_peringatan_stok_minimum(daftar_barang)
                             break
                         except ValueError as e:
-                            print(f"[Gagal Pembayaran] {e}")
+                            print(f"[Gagal pembayaran] {e}")
 
         elif pilih == "2":
             print("\n--- TAMBAH KUALIFIKASI KOMODITAS PEMBELI (FR-08) ---")
@@ -634,7 +607,7 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
                         tanggal_berlaku_sampai=date.today() + timedelta(days=masa_hari)
                     )
                     p.tambah_kualifikasi_komoditas(kual)
-                    print(f"[Sukses] Kualifikasi {prog} ({kat_sasaran}) ditambahkan untuk {p.nama_pembeli}.")
+                    print(f"Kualifikasi {prog} ({kat_sasaran}) ditambahkan untuk {p.nama_pembeli}.")
             except Exception as e:
                 print(f"[Error] {e}")
 
@@ -642,39 +615,36 @@ def menu_kasir(kasir: Kasir, daftar_barang: list, daftar_pembeli: list, daftar_t
             print(f"\n--- RIWAYAT PENJUALAN KASIR: {kasir.nama_lengkap} ---")
             tx_saya = [tx for tx in daftar_transaksi if tx.kasir.id_user == kasir.id_user]
             if not tx_saya:
-                print("[Info] Anda belum memproses transaksi apa pun.")
+                print("Anda belum memproses transaksi apa pun.")
             for tx in tx_saya:
                 print(f" - [{tx.nomor_transaksi}] {tx.waktu_transaksi.strftime('%Y-%m-%d %H:%M')} | "
                       f"Pembeli: {tx.pembeli.nama_pembeli} | Status: {tx.status_transaksi} | Total: Rp {tx.total_tagihan}")
 
         elif pilih == "4":
             kasir.logout()
-            print("[Info] Logout dari akun Kasir.")
+            print("Logout dari akun Kasir.")
             break
         else:
-            print("[Error] Pilihan tidak valid.")
+            print("Pilihan tidak valid.")
 
 
-# =====================================================================
-# 5. MODUL ANTARMUKA PETUGAS GUDANG (FR-14 s.d. FR-17, MATRIKS O-18)
-# =====================================================================
 
 def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supplier: list, daftar_aktivitas: list):
     while True:
         cek_peringatan_stok_minimum(daftar_barang)
-        print("\n========================================================")
+        print("\n===========================================")
         print(f"  MENU PETUGAS GUDANG ({petugas.nama_lengkap})")
-        print("========================================================")
-        print("1. Catat Barang Masuk dari Supplier (FR-14)")
-        print("2. Catat Barang Keluar Nonpenjualan (FR-15)")
-        print("3. Penyesuaian Stok / Stock Opname (FR-16)")
-        print("4. Lihat Semua Riwayat Aktivitas Persediaan (Baca Saja - FR-19)")
+        print("=============================================")
+        print("1. Catat barang sasuk dari supplier")
+        print("2. Catat barang keluar nonpenjualan")
+        print("3. Penyesuaian stok / stock opname")
+        print("4. Lihat Semua riwayat aktivitas persediaan")
         print("5. Logout")
         pilih = input("Pilih menu (1-5): ").strip()
 
         if pilih in ("1", "2", "3"):
             if not daftar_barang:
-                print("[Error] Master barang kosong.")
+                print("Master barang kosong.")
                 continue
             print("\n--- PILIH BARANG ---")
             for idx, b in enumerate(daftar_barang):
@@ -682,7 +652,7 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
             try:
                 idx_b = int(input("Pilih nomor barang: ").strip()) - 1
                 if not (0 <= idx_b < len(daftar_barang)):
-                    print("[Error] Nomor barang tidak valid.")
+                    print("Nomor barang tidak valid.")
                     continue
                 brg = daftar_barang[idx_b]
 
@@ -692,7 +662,7 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
                         print(f" [{i+1}] {s.nama_supplier} ({s.jenis_instansi})")
                     idx_s = int(input("Pilih nomor supplier: ").strip()) - 1
                     if not (0 <= idx_s < len(daftar_supplier)):
-                        print("[Error] Supplier tidak valid.")
+                        print("Supplier tidak valid.")
                         continue
                     sup = daftar_supplier[idx_s]
                     jml = int(input(f"Jumlah masuk ({brg.satuan}): ").strip())
@@ -702,34 +672,34 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
 
                     akt = petugas.catat_barang_masuk(brg, sup, jml, no_sj, harga_beli, ket)
                     daftar_aktivitas.append(akt)
-                    print(f"[Sukses] Barang masuk tercatat (ID: {akt.id_aktivitas}). Stok baru: {brg.stok_tersedia} {brg.satuan}.")
+                    print(f"Barang masuk tercatat (ID: {akt.id_aktivitas}). Stok baru: {brg.stok_tersedia} {brg.satuan}.")
 
                 elif pilih == "2":
                     print("\n--- FORM BARANG KELUAR NONPENJUALAN ---")
                     jml = int(input(f"Jumlah keluar ({brg.satuan}): ").strip())
                     keperluan = input("Keperluan (RUSAK / KEDALUWARSA / KEBUTUHAN_INTERNAL): ").strip().upper()
                     if keperluan not in ("RUSAK", "KEDALUWARSA", "KEBUTUHAN_INTERNAL"):
-                        print("[Error] Jenis keperluan harus RUSAK, KEDALUWARSA, atau KEBUTUHAN_INTERNAL.")
+                        print("Jenis keperluan harus RUSAK, KEDALUWARSA, atau KEBUTUHAN_INTERNAL.")
                         continue
                     penerima = input("Nama penerima / penanggung jawab: ").strip()
                     ket = input("Catatan: ").strip()
 
                     akt = petugas.catat_barang_keluar(brg, jml, keperluan, penerima, ket)
                     daftar_aktivitas.append(akt)
-                    print(f"[Sukses] Barang keluar tercatat (ID: {akt.id_aktivitas}). Stok baru: {brg.stok_tersedia} {brg.satuan}.")
+                    print(f"Barang keluar tercatat (ID: {akt.id_aktivitas}). Stok baru: {brg.stok_tersedia} {brg.satuan}.")
 
                 elif pilih == "3":
                     print("\n--- FORM STOCK OPNAME ---")
                     stok_fisik = int(input(f"Masukkan stok fisik hasil hitung aktual ({brg.satuan}): ").strip())
                     if stok_fisik == brg.stok_tersedia:
-                        print("[Info] Stok fisik sama dengan stok sistem (selisih 0). Penyesuaian dibatalkan.")
+                        print("Stok fisik sama dengan stok sistem (selisih 0). Penyesuaian dibatalkan.")
                         continue
                     alasan = input("Alasan penyesuaian stok (wajib diisi): ").strip()
                     ket = input("Catatan tambahan: ").strip()
 
                     akt = petugas.catat_penyesuaian_stok(brg, stok_fisik, alasan, ket)
                     daftar_aktivitas.append(akt)
-                    print(f"[Sukses] Stock opname tercatat (ID: {akt.id_aktivitas}). Selisih: {akt.selisih_stok:+d}. Stok akhir: {brg.stok_tersedia}.")
+                    print(f"Stock opname tercatat (ID: {akt.id_aktivitas}). Selisih: {akt.selisih_stok:+d}. Stok akhir: {brg.stok_tersedia}.")
 
             except Exception as e:
                 print(f"[Error] {e}")
@@ -737,7 +707,7 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
         elif pilih == "4":
             print("\n--- RIWAYAT AKTIVITAS PERSEDIAAN (BACA SAJA) ---")
             if not daftar_aktivitas:
-                print("[Info] Belum ada riwayat mutasi gudang.")
+                print("Belum ada riwayat mutasi gudang.")
             for akt in daftar_aktivitas:
                 r = akt.dapatkan_ringkasan_audit()
                 print(f" - [{r['id_aktivitas']}] {r['waktu_aktivitas'][:19]} | {akt.__class__.__name__} | "
@@ -746,23 +716,19 @@ def menu_petugas_gudang(petugas: PetugasGudang, daftar_barang: list, daftar_supp
 
         elif pilih == "5":
             petugas.logout()
-            print("[Info] Logout dari akun Petugas Gudang.")
+            print("Logout dari akun Petugas Gudang.")
             break
         else:
-            print("[Error] Pilihan tidak valid.")
+            print("Pilihan tidak valid.")
 
-
-# =====================================================================
-# 6. GERBANG UTAMA APLIKASI CLI (MAIN LOOP)
-# =====================================================================
 
 def main():
     users, daftar_barang, daftar_supplier, daftar_kategori, daftar_transaksi, daftar_aktivitas, daftar_pembeli = setup_initial_data()
 
     while True:
-        print("\n============================================================")
-        print("   SIMIP - KOPERASI DESA MERAH PUTIH (PRD v0.2 - CLI PBO)   ")
-        print("============================================================")
+        print("\n====================================")
+        print("   SIMIP - KOPERASI DESA MERAH PUTIH ")
+        print("======================================")
         print("Akun Bawaan Demo:")
         print(" - Admin          : admin  / admin123")
         print(" - Kasir 1        : kasir1 / kasir123")
@@ -772,14 +738,14 @@ def main():
 
         username = input("\nUsername : ").strip()
         if username.lower() == "keluar":
-            print("Terima kasih telah menggunakan SIMIP Kopdes Merah Putih.")
+            print("Berhasil keluar dari SIMIP Kopdes Merah Putih.")
             sys.exit(0)
 
         password = input("Password : ").strip()
 
         user_obj = users.get(username)
         if user_obj and user_obj.login(username, password):
-            print(f"\n[Login Berhasil] Selamat datang, {user_obj.nama_lengkap} (Peran: {user_obj.peran})")
+            print(f"\nSelamat datang, {user_obj.nama_lengkap} (Peran: {user_obj.peran})")
             if isinstance(user_obj, Admin):
                 menu_admin(user_obj, users, daftar_barang, daftar_kategori, daftar_supplier, daftar_transaksi, daftar_aktivitas)
             elif isinstance(user_obj, Kasir):
@@ -787,7 +753,7 @@ def main():
             elif isinstance(user_obj, PetugasGudang):
                 menu_petugas_gudang(user_obj, daftar_barang, daftar_supplier, daftar_aktivitas)
         else:
-            print("[Login Gagal] Username/password salah atau akun dalam status NONAKTIF (FR-01).")
+            print("Username/password salah atau akun dalam status NONAKTIF")
 
 
 if __name__ == "__main__":
